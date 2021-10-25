@@ -2,6 +2,8 @@
  * VoiceActor by Blitz
  */
 
+import { VoiceActorChatter } from "./voiceactorchatter";
+
 export class VoiceActor {
     static moduleName = "VoiceActor";
 
@@ -64,6 +66,8 @@ export class VoiceActor {
     }
 
     static playClip(clip, toAllWithSocket){
+      // let playVolume = game.settings.get("core", "globalInterfaceVolume"); // TODO CUSTOMIZE WITH MODULE SETTINGS ???
+      // AudioHelper.play({src: fileClipPlayPath, volume: playVolume, autoplay: true, loop: false}, true);
       // Audio file to be played back
       let vaPlaybackFile;
       let hasHowler = typeof Howl != 'undefined'
@@ -109,6 +113,88 @@ export class VoiceActor {
           ui.notifications.notify(game.i18n.localize("VOICEACTOR.notif.no-clip-for-actor"));
       }
     }
+
+    static retrieveOrCreateRollTable(tokenData, fileNamePath){
+      const voiceActorFolder = game.folders.contents.filter(x => x.type == "RollTable" && x.name.toLowerCase() == "voice actor")[0];
+      let actorRollTableName = tokenData.actor.name + " voice";
+      let myTable = game.tables.entities.find(table => table.name.toLowerCase() == actorRollTableName.toLowerCase());
+      if(!myTable){
+        // ui.notifications.notify(game.i18n.format("VOICEACTOR.notif.no-rolltable-for-actor", actorRollTableName));
+        myTable = await RollTable.create({
+            name: actorRollTableName,
+            // description: actorRollTableName, // This appears on every roll in the chat!
+            results: [],
+            replacement: true,
+            displayRoll: true,
+            img: '', //"modules/EasyTable/easytable.png"
+            folder: voiceActorFolder ? voiceActorFolder : ''
+            // formula:     formula ? formula : (min == 1) ? `1d${max}` : `1d${max-min+1}+${min-1}`,
+            //sort: number,
+            //permission: object,
+            //flags: object
+        });
+        await myTable.normalize();
+      }
+
+      // TODO code for add a element ot the rolltable
+    }
+
+    // static getCollection(collection) {
+    //   let validCollection = ['Actor', 'Scene', 'Macro', 'Playlist', 'JournalEntry', 'RollTable', 'Item']
+    //   if (validCollection.includes(collection)) {
+    //       return collection
+    //   }
+    //   return '';
+    // }
+
+    // static getResultId(collection, text) {
+    //     let resultId = '';
+    //     let img = 'icons/svg/d20-black.svg'
+    //     if (collection == 'Text' || !collection) {
+    //         return [resultId, img];
+    //     }
+    //     let entity;
+    //     switch (collection) {
+    //         case 'Actor':
+    //                 entity = game.actors.getName(text);
+    //                 resultId = entity?.id||''
+    //                 img = entity?.img||img;
+    //             break;
+    //         case 'Scene':
+    //                 entity = game.scenes.getName(text);
+    //                 resultId = entity?.id||''
+    //                 img = entity?.img||img;
+    //             break;
+    //         case 'Macro':
+    //                 entity = game.macros.getName(text);
+    //                 resultId = entity?.id||''
+    //                 img = entity?.data?.img||img;
+    //             break;
+    //         case 'Playlist':
+    //                 entity = game.playlists.getName(text);
+    //                 resultId = entity?.id||''
+    //                 // img = entity?.img||img;
+    //             break;
+    //         case 'JournalEntry':
+    //                 entity = game.journal.getName(text);
+    //                 resultId = entity?.id||''
+    //                 img = entity?.data?.img||img;
+    //             break;
+    //         case 'RollTable':
+    //                 entity = game.tables.getName(text);
+    //                 resultId = entity?.id||''
+    //                 img = entity?.data?.img||img;
+    //             break;
+    //         case 'Item':
+    //                 entity = game.items.getName(text);
+    //                 resultId = entity?.id||''
+    //                 img = entity?.img||img;
+    //             break;
+    //         default:
+    //             break;
+    //     }
+    //     return [resultId, img];
+    // }
 }
 
 Hooks.once('ready', async () => {
@@ -274,6 +360,8 @@ let onRender = async (app, html, data) => {
                     clearTimeout(vaRecorderTimeout);
                     delete vaRecorderTimeout;
                     delete stream;
+
+                    VoiceActor.retrieveOrCreateRollTable(data,`${dirName[0]=='/'?dirName.substr(1):dirName}/${fileName}`);
                 }
             };
             vaRecorder.start();

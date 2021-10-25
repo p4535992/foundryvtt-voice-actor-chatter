@@ -6,7 +6,7 @@ export class VoiceActorChatter {
 
   getChatterTables = function() {
     const voiceActorFolder = game.folders.contents.filter(x => x.type == "RollTable" && x.name.toLowerCase() == "voice actor")[0];
-    const tables = game.tables.contents.filter(x => x.name.toLowerCase().endsWith("voice") || x.data.folder == chatterFolder._id);
+    const tables = game.tables.contents.filter(x => x.name.toLowerCase().endsWith("voice") || x.data.folder == voiceActorFolder._id);
     return tables;
   }
 
@@ -47,8 +47,6 @@ export class VoiceActorChatter {
     let fileClipPlayPath = VoiceActor.getClipFromRollTableRow(token.data, null, result);
     // Play file
     VoiceActor.playClip(fileClipPlayPath, true);
-    // let playVolume = game.settings.get("core", "globalInterfaceVolume"); // TODO CUSTOMIZE WITH MODULE SETTINGS ???
-    // AudioHelper.play({src: fileClipPlayPath, volume: playVolume, autoplay: true, loop: false}, true);
   }
 
   async tokenChatter(token, options={}) {
@@ -75,8 +73,6 @@ export class VoiceActorChatter {
     let fileClipPlayPath = VoiceActor.getClipFromRollTableRow(token.data, null, result);
     // Play file
     VoiceActor.playClip(fileClipPlayPath, true);
-    // let playVolume = game.settings.get("core", "globalInterfaceVolume"); // TODO CUSTOMIZE WITH MODULE SETTINGS ???
-    // AudioHelper.play({src: fileClipPlayPath, volume: playVolume, autoplay: true, loop: false}, true);
   }
 
   async selectedChatter(options={}) {
@@ -110,8 +106,6 @@ export class VoiceActorChatter {
     let fileClipPlayPath = VoiceActor.getClipFromRollTableRow(token.data, null, result);
     // Play file
     VoiceActor.playClip(fileClipPlayPath, true);
-    // let playVolume = game.settings.get("core", "globalInterfaceVolume"); // TODO CUSTOMIZE WITH MODULE SETTINGS ???
-    // AudioHelper.play({src: fileClipPlayPath, volume: playVolume, autoplay: true, loop: false}, true);
   }
 
   async turnOffGlobalTimerChatter() {
