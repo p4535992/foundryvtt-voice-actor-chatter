@@ -1,3 +1,9 @@
+# 0.2.0 - 
+
+- Integration of ecma scirpt module
+- Add mutliclips management
+- Add integration with rolltable for random sounds (inspired from npc chatter)
+- Add custom directory as module settings
 # 0.1.2 - 2021/08/09
 
 * Fixed broken audio files, republished

@@ -2,25 +2,52 @@
  * VoiceActor by Blitz
  */
 
-class VoiceActor {
+export class VoiceActor {
     static moduleName = "VoiceActor";
 
-    static getClip = async (data, customDirectory, isJournal) => {
-        // Get files
-        var vaDir = await FilePicker.browse(VoiceActor.isForge() ? 'forgevtt' : 'data', `${customDirectory}/VoiceActor${isJournal?'/Journal':''}`)
-        // Check if file exists already
-        var fileName;
-        if (isJournal) {
-            fileName = `${data.entity._id}.wav`;
-        } else {
-            if (data.actor.token.actorLink) {
-                fileName = `${data.actor._id}.wav`;
-            } else {
-                fileName = `${data.actor._id}-${data.actor.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.wav`
-            }
+    static getClipFromRollTableRow = async (data, customDirectory, textResult) => {
+        if(!customDirectory){
+          customDirectory = game.settings.get("VoiceActor", "customDirectory") ?? '';
         }
 
+        let nameActorFolder = VoiceActor.getClipActorFolderName(data);
+        // Get files
+        let vaDir = await FilePicker.browse(VoiceActor.isForge() ? 'forgevtt' : 'data', `${customDirectory}/VoiceActor${isJournal?'/Journal':''}/${nameActorFolder}`)
+        // Check if file exists already
+        let fileName = textResult;
         return VoiceActor.getFile(vaDir.files, fileName);
+    }
+
+    static getClip = async (data, customDirectory, isJournal) => {
+        if(!customDirectory){
+          customDirectory = game.settings.get("VoiceActor", "customDirectory") ?? '';
+        }
+        // Get files
+        let vaDir = await FilePicker.browse(VoiceActor.isForge() ? 'forgevtt' : 'data', `${customDirectory}/VoiceActor${isJournal?'/Journal':''}/${nameActorFolder}`)
+        // Check if file exists already
+        let fileName = VoiceActor.getClipActorFileName(data, isJournal);
+
+        return VoiceActor.getFile(vaDir.files, fileName);
+    }
+
+    static getClipActorFolderName = function(data){
+      let fileName = `${data.actor._id}-${data.actor.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}`
+      return fileName;
+    }
+
+    static getClipActorFileName = function(data, isJournal){
+      // Check if file exists already
+      let fileName;
+      if (isJournal) {
+          fileName = `${data.entity._id}.wav`;
+      } else {
+          if (data.actor.token.actorLink) {
+              fileName = `${data.actor._id}.wav`;
+          } else {
+              fileName = `${data.actor._id}-${data.actor.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.wav`
+          }
+      }
+      return fileName;
     }
 
     static getFile = (filesArray, filename) => {
@@ -34,6 +61,53 @@ class VoiceActor {
         } else {
             return false;
         }
+    }
+
+    static playClip(clip, toAllWithSocket){
+      // Audio file to be played back
+      let vaPlaybackFile;
+      let hasHowler = typeof Howl != 'undefined'
+      if (clip) {
+          // Used for onend and onstop
+          let onFinish = (id) => {
+              // Prevent caching, in case the user overwrites the clip
+              if (vaPlaybackFile) {
+                  if(hasHowler){
+                      vaPlaybackFile.unload();
+                  }
+                  vaPlaybackFile = undefined;
+              }
+              // vaStates.playing = false;
+              // title.find("#voiceactor-playback #voiceactor-playback-icon").removeClass('fa-stop').addClass('fa-play');
+          }
+          // Play file
+          let payload = {
+              src: clip,
+              volume: game.settings.get("core", "globalInterfaceVolume"), // TODO CUSTOMIZE WITH MODULE SETTINGS ???
+              onend: onFinish,
+              onstop: onFinish
+          }
+          if(hasHowler){
+              vaPlaybackFile = new Howl(payload);
+              vaPlaybackFile.play();
+          } else {
+              vaPlaybackFile = new Sound(payload.src);
+              vaPlaybackFile.on('end', onFinish);
+              vaPlaybackFile.on('stop', onFinish)
+              await vaPlaybackFile.load();
+              vaPlaybackFile.play({volume: payload.volume});
+          }
+          // vaStates.playing = true;
+          // title.find("#voiceactor-playback #voiceactor-playback-icon").removeClass('fa-play').addClass('fa-stop');
+          if (toAllWithSocket) {
+              game.socket.emit("playAudio", payload)
+              ui.notifications.notify(game.i18n.localize("VOICEACTOR.notif.broadcasted"));
+          }
+
+
+      } else {
+          ui.notifications.notify(game.i18n.localize("VOICEACTOR.notif.no-clip-for-actor"));
+      }
     }
 }
 
@@ -57,19 +131,29 @@ Hooks.once('ready', async () => {
         type: Boolean
     });
 
+    game.settings.register("VoiceActor", "customDirectory", {
+      name: game.i18n.localize("VOICEACTOR.settings.customDirectory.name"),
+      hint: game.i18n.localize("VOICEACTOR.settings.customDirectory.hint"),
+      scope: "world",
+      config: true,
+      type: String,
+      default: "",
+      filePicker: "audio",
+    });
+
     if (game.user.isGM) {
         // Will be used when custom dirs are supported
-        var customDirectory = ''
+        let customDirectory = game.settings.get("VoiceActor", "customDirectory") ?? '';
         // Ensure the VA dir exists
         try {
-            await FilePicker.createDirectory(VoiceActor.isForge() ? 'forgevtt' : 'data', `${customDirectory}/VoiceActor`)
+            await FilePicker.createDirectory(VoiceActor.isForge() ? 'forgevtt' : 'data', `${customDirectory}/VoiceActor/${nameActorFolder}`)
         } catch (e) {
             if (!e.startsWith('EEXIST')) {
                 console.log(e);
             }
         }
         try {
-            await FilePicker.createDirectory(VoiceActor.isForge() ? 'forgevtt' : 'data', `${customDirectory}/VoiceActor/Journal`)
+            await FilePicker.createDirectory(VoiceActor.isForge() ? 'forgevtt' : 'data', `${customDirectory}/VoiceActor/Journal/${nameActorFolder}`)
         } catch (e) {
             if (!e.startsWith('EEXIST')) {
                 console.log(e);
@@ -78,35 +162,35 @@ Hooks.once('ready', async () => {
     }
 });
 
-var onRender = async (app, html, data) => {
+let onRender = async (app, html, data) => {
 
-    var customDirectory = ''
+    let customDirectory = game.settings.get("VoiceActor", "customDirectory") ?? '';
 
     // Get window-title from html so we can prepend our buttons
     let title = html.find('.window-title');
 
     // Store recording and playback states
-    var vaStates = {
+    let vaStates = {
         recording: false,
         playing: false
     }
 
     // Audio file to be played back
-    var vaPlaybackFile;
+    let vaPlaybackFile;
 
     // MediaRecorder
-    var vaRecorder;
+    let vaRecorder;
 
     // timeout to sop vaRecorder after 10 seconds if not stopped manually
-    var vaRecorderTimeout;
+    let vaRecorderTimeout;
 
-    var isJournal = false;
+    let isJournal = false;
     if (data.options.classes.indexOf("journal-sheet") > -1) {
         isJournal = true;
     }
 
     let buttons = ``;
-    game.settings.get("VoiceActor", "playersRecordOwned");
+
     if (game.user.isGM || (data.owner && game.settings.get("VoiceActor", "playersRecordOwned") && game.user.hasPermission("FILES_UPLOAD"))) {
         buttons += `<button id="voiceactor-record" class="voiceactor-button" title="${game.i18n.localize("VOICEACTOR.ui.button-tooltip-record")}">
         <i id="voiceactor-record-icon" style="color: white" class="fas fa-microphone"></i>
@@ -151,17 +235,7 @@ var onRender = async (app, html, data) => {
             }
         }
 
-        var fileName;
-
-        if (isJournal) {
-            fileName = `${data.entity._id}.wav`;
-        } else {
-            if (data.actor.token.actorLink) {
-                fileName = `${data.actor._id}.wav`;
-            } else {
-                fileName = `${data.actor._id}-${data.actor.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.wav`
-            }
-        }
+        let fileName = VoiceActor.getClipActorFileName(data, isJournal);
 
         if(!navigator.mediaDevices){
             ui.notifications.error(game.i18n.localize("VOICEACTOR.notif.no-media-devices"));
@@ -185,7 +259,8 @@ var onRender = async (app, html, data) => {
                         type: 'audio/wav'
                     })
 
-                    let dirName = `${customDirectory}/VoiceActor${isJournal?'/Journal':''}`
+                    let nameActorFolder = VoiceActor.getClipActorFolderName(data);
+                    let dirName = `${customDirectory}/VoiceActor${isJournal?'/Journal':''}/${nameActorFolder}`;
 
                     await FilePicker.upload(VoiceActor.isForge() ? 'forgevtt' : 'data', dirName, file);
                     vaStates.recording = false;
@@ -224,7 +299,7 @@ var onRender = async (app, html, data) => {
         let hasHowler = typeof Howl != 'undefined'
         if (clip) {
             // Used for onend and onstop
-            var onFinish = (id) => {
+            let onFinish = (id) => {
                 // Prevent caching, in case the user overwrites the clip
                 if (vaPlaybackFile) {
                     if(hasHowler){
@@ -238,7 +313,7 @@ var onRender = async (app, html, data) => {
             // Play file
             let payload = {
                 src: clip,
-                volume: game.settings.get("core", "globalInterfaceVolume"),
+                volume: game.settings.get("core", "globalInterfaceVolume"), // TODO CUSTOMIZE WITH MODULE SETTINGS ???
                 onend: onFinish,
                 onstop: onFinish
             }
@@ -269,3 +344,4 @@ var onRender = async (app, html, data) => {
 Hooks.on(`renderActorSheet`, onRender);
 
 Hooks.on(`renderJournalSheet`, onRender);
+
