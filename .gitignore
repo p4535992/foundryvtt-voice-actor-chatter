@@ -1,3 +1,4 @@
 .vscode/settings.json
 .vs/
 TODO
+node_modules

@@ -5,8 +5,8 @@
   "version": "0.1.2",
   "author": "Blitzkraig",
   "scripts": [],
-  "esmodules": ["foundryvtt-arms-reach.js"],
-  "styles": ["styles/va.css"],
+  "esmodules": ["main.js"],
+  "styles": ["./css/va.css"],
   "packs": [],
   "languages": [
     {

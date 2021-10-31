@@ -134,7 +134,7 @@ export class VoiceActor {
             //flags: object
         });
         await myTable.normalize();
-      }
+    }
 
       // TODO code for add a element ot the rolltable
     }
@@ -197,7 +197,7 @@ export class VoiceActor {
     // }
 }
 
-Hooks.once('ready', async () => {
+export const readyHooks = async () => {
 
     game.settings.register("VoiceActor", "playersRecordOwned", {
         name: "VOICEACTOR.settings.players-record-owned.name",
@@ -218,13 +218,13 @@ Hooks.once('ready', async () => {
     });
 
     game.settings.register("VoiceActor", "customDirectory", {
-      name: game.i18n.localize("VOICEACTOR.settings.customDirectory.name"),
-      hint: game.i18n.localize("VOICEACTOR.settings.customDirectory.hint"),
-      scope: "world",
-      config: true,
-      type: String,
-      default: "",
-      filePicker: "audio",
+        name: game.i18n.localize("VOICEACTOR.settings.customDirectory.name"),
+        hint: game.i18n.localize("VOICEACTOR.settings.customDirectory.hint"),
+        scope: "world",
+        config: true,
+        type: String,
+        default: "",
+        filePicker: "audio",
     });
 
     if (game.user.isGM) {
@@ -232,21 +232,21 @@ Hooks.once('ready', async () => {
         let customDirectory = game.settings.get("VoiceActor", "customDirectory") ?? '';
         // Ensure the VA dir exists
         try {
-            await FilePicker.createDirectory(VoiceActor.isForge() ? 'forgevtt' : 'data', `${customDirectory}/VoiceActor/${nameActorFolder}`)
+            await FilePicker.createDirectory(VoiceActor.isForge() ? 'forgevtt' : 'data', `${customDirectory}/VoiceActor}`)
         } catch (e) {
             if (!e.startsWith('EEXIST')) {
                 console.log(e);
             }
         }
         try {
-            await FilePicker.createDirectory(VoiceActor.isForge() ? 'forgevtt' : 'data', `${customDirectory}/VoiceActor/Journal/${nameActorFolder}`)
+            await FilePicker.createDirectory(VoiceActor.isForge() ? 'forgevtt' : 'data', `${customDirectory}/VoiceActor/Journal`)
         } catch (e) {
             if (!e.startsWith('EEXIST')) {
                 console.log(e);
             }
         }
     }
-});
+};
 
 let onRender = async (app, html, data) => {
 
