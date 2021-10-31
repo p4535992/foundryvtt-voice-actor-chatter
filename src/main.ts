@@ -13,7 +13,7 @@
 // Import TypeScript modules
 
 import { getGame, registerSettings, VOICE_ACTOR_MODULE_NAME } from './settings';
-import { readyHooks } from './voiceactor';
+import { initHooks, readyHooks, setupHooks } from './Hooks';
 
 export let debugEnabled = 0;
 // 0 = none, warnings = 1, debug = 2, all = 3
@@ -45,7 +45,7 @@ Hooks.once('init', async () => {
   // Register custom module settings
   registerSettings();
   // Assign custom classes and constants here
-  // initHooks();
+  initHooks();
   // Preload Handlebars templates
   // await preloadTemplates();
   // Register custom sheets (if any)
@@ -56,7 +56,7 @@ Hooks.once('init', async () => {
 Hooks.once('setup', function () {
   // Do anything after initialization but before ready
   // setupModules();
-  // setupHooks();
+  setupHooks();
 });
 /* ------------------------------------ */
 /* When ready							*/

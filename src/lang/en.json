@@ -20,6 +20,10 @@
       "players-playback-limited": {
         "name": "Allow Limited & Observer playback",
         "hint": "Enable to let players playback clips on actors they have Limited or Observer permissions on. Players cannot record to these actors."
+      },
+      "customDirectory": {
+        "name": "Custom directory path",
+        "hint": "Custom directory path"
       }
     }
   }

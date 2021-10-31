@@ -4,35 +4,51 @@
 
 import { TokenData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
 import { BaseTableResult } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/documents.mjs';
+import { warn } from './main';
 import { getGame, VOICE_ACTOR_MODULE_NAME } from './settings';
 import { VoiceActorChatter } from './voiceactorchatter';
 
 export class VoiceActor {
   static moduleName = VOICE_ACTOR_MODULE_NAME;
 
-  static getClipFromRollTableRow = async (data:TokenData, customDirectory:string, textResult:string, isJournal:boolean) => {
+  static getClip = async (data: Token, customDirectory: string, isJournal: boolean) => {
     if (!customDirectory) {
       customDirectory = <string>getGame().settings.get(VOICE_ACTOR_MODULE_NAME, 'customDirectory') ?? '';
     }
 
     const nameActorFolder = VoiceActor.getClipActorFolderName(data);
-    // Get files
-    const vaDir = await FilePicker.browse(
-      //@ts-ignore
-      VoiceActor.isForge() ? 'forgevtt' : 'data',
-      `${customDirectory}/VoiceActor${isJournal ? '/Journal' : ''}/${nameActorFolder}`,
-    );
-    // Check if file exists already
-    const fileName = textResult;
-    return <string>VoiceActor.getFile(vaDir.files, fileName);
-  };
 
-  static getClip = async (data:TokenData, customDirectory:string, isJournal:boolean) => {
-    if (!customDirectory) {
-      customDirectory = <string>getGame().settings.get(VOICE_ACTOR_MODULE_NAME, 'customDirectory') ?? '';
+    // Create directories
+    try{
+      await FilePicker.createDirectory(
+        //@ts-ignore
+        VoiceActor.isForge() ? 'forgevtt' : 'data',
+        `${customDirectory}`,
+        {}
+      );
+    }catch(e){
+      // DO NOTHING
     }
-
-    const nameActorFolder = VoiceActor.getClipActorFolderName(data);
+    try{
+      await FilePicker.createDirectory(
+        //@ts-ignore
+        VoiceActor.isForge() ? 'forgevtt' : 'data',
+        `${customDirectory}/VoiceActor${isJournal ? '/Journal' : ''}`,
+        {}
+      );
+    }catch(e){
+      // DO NOTHING
+    }
+    try{
+      await FilePicker.createDirectory(
+        //@ts-ignore
+        VoiceActor.isForge() ? 'forgevtt' : 'data',
+        `${customDirectory}/VoiceActor${isJournal ? '/Journal' : ''}/${nameActorFolder}`,
+        {}
+      );
+    }catch(e){
+      // DO NOTHING
+    }
 
     // Get files
     const vaDir = await FilePicker.browse(
@@ -46,27 +62,27 @@ export class VoiceActor {
     return VoiceActor.getFile(vaDir.files, fileName);
   };
 
-  static getClipActorFolderName = function (data:TokenData) {
-    const fileName = `${data.actorId}-${data.actorData?.name?.replace(/[^a-z0-9]/gi, '_').toLowerCase()}`;
+  static getClipActorFolderName = function (data: Token) {
+    const fileName = `${data.actor?._id}-${data.actor?.name?.replace(/[^a-z0-9]/gi, '_').toLowerCase()}`;
     return fileName;
   };
 
-  static getClipActorFileName = function (data:TokenData, isJournal:boolean) {
+  static getClipActorFileName = function (data: Token, isJournal: boolean) {
     // Check if file exists already
     let fileName;
     if (isJournal) {
-      fileName = `${data._id}.wav`;
+      fileName = `${data.actor?._id}.wav`;
     } else {
-      if (data.actorLink) {
-        fileName = `${data.actorId}.wav`;
-      } else {
-        fileName = `${data.actorId}-${data.actorData?.name?.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.wav`;
-      }
+      // if (data.actorLink) {
+      //   fileName = `${data.actor.id}.wav`;
+      // } else {
+        fileName = `${data.actor?._id}-${data.actor?.name?.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.wav`;
+      // }
     }
     return fileName;
   };
 
-  static getFile = (filesArray:string[], filename:string) => {
+  static getFile = (filesArray: string[], filename: string) => {
     const file = filesArray.find((el) => el.includes(filename));
     return file || false;
   };
@@ -81,7 +97,26 @@ export class VoiceActor {
     }
   };
 
-  static playClip = async function (clip:string, toAllWithSocket:boolean) {
+  static playClipRandomFromToken = async function (token:Token){
+    const voiceActorFolder = <Folder>(
+      getGame().folders?.contents.filter((x) => x.type == 'RollTable' && x.name?.toLowerCase() == 'voice actor')[0]
+    );
+    const tables = <RollTable[]>(
+      getGame().tables?.contents.filter(
+        (x) => x.name?.toLowerCase().endsWith('voice') || x.data.folder == voiceActorFolder._id,
+      )
+    );
+    const eligableTables: RollTable[] = tables.filter((t: RollTable) =>
+      token.name?.toLowerCase().includes(<string>t.name?.toLowerCase().replace(' voice', '').trim())
+    );
+    const table:RollTable = eligableTables[0];
+
+    const roll = await table.data.document.roll();
+    const clip = roll.results[0].data.text;
+    this.playClip(clip, true);
+  }
+
+  static playClip = async function (clip: string, toAllWithSocket: boolean) {
     // let playVolume = getGame().settings.get("core", "globalInterfaceVolume"); // TODO CUSTOMIZE WITH MODULE SETTINGS ???
     // AudioHelper.play({src: fileClipPlayPath, volume: playVolume, autoplay: true, loop: false}, true);
     // Audio file to be played back
@@ -131,11 +166,11 @@ export class VoiceActor {
     }
   };
 
-  static retrieveOrCreateRollTable = async function (tokenData: TokenData, fileNamePath: string, fileName: string) {
+  static retrieveOrCreateRollTable = async function (tokenData: Token, fileNamePath: string, fileName: string) {
     const voiceActorFolder = getGame().folders?.contents.filter(
       (x: Folder) => x.type == 'RollTable' && x.name?.toLowerCase() == 'voice actor',
     )[0];
-    const actorRollTableName = tokenData.actorData?.name + ' voice';
+    const actorRollTableName = tokenData.actor?.name + ' voice';
     let myTable: RollTable | undefined = getGame().tables?.contents.find(
       (table: RollTable) => table.name?.toLowerCase() == actorRollTableName.toLowerCase(),
     );
@@ -158,18 +193,17 @@ export class VoiceActor {
       await myTable.normalize();
     }
 
-    VoiceActor._onCreateResult(myTable, fileName);
+    VoiceActor._onCreateResult(myTable, fileNamePath, fileName);
   };
 
-  static async _onCreateResult(rollTable: RollTable, fileName: string) {
+  static async _onCreateResult(rollTable: RollTable, fileNamePath:string, fileName: string) {
     // event.preventDefault();
 
     // Save any pending changes
     // await this._onSubmit(event);
 
     // Get existing results
-    //@ts-ignore
-    const results: any[] = Array.from(rollTable.document.results.values());
+    const results: any[] = Array.from(rollTable.data.document.results.values());
     const last = results[results.length - 1];
 
     // Get weight and range data
@@ -191,9 +225,11 @@ export class VoiceActor {
       weight: weight,
       range: range,
       drawn: false,
+      text: fileNamePath,
+      img: ''
+
     };
-    //@ts-ignore
-    return rollTable.document?.createEmbeddedDocuments('TableResult', [resultData]);
+    return rollTable.data.document?.createEmbeddedDocuments('TableResult', [resultData]);
   }
 
   // static getCollection(collection) {
@@ -254,34 +290,7 @@ export class VoiceActor {
   // }
 }
 
-export const readyHooks = async () => {
-  if (getGame().user?.isGM) {
-    // Will be used when custom dirs are supported
-    const customDirectory = getGame().settings.get(VOICE_ACTOR_MODULE_NAME, 'customDirectory') ?? '';
-    // Ensure the VA dir exists
-    try {
-      //@ts-ignore
-      await FilePicker.createDirectory(VoiceActor.isForge() ? 'forgevtt' : 'data', `${customDirectory}/VoiceActor}`);
-    } catch (e) {
-      if (!e.startsWith('EEXIST')) {
-        console.log(e);
-      }
-    }
-    try {
-      await FilePicker.createDirectory(
-        //@ts-ignore
-        VoiceActor.isForge() ? 'forgevtt' : 'data',
-        `${customDirectory}/VoiceActor/Journal`,
-      );
-    } catch (e) {
-      if (!e.startsWith('EEXIST')) {
-        console.log(e);
-      }
-    }
-  }
-};
-
-const onRender = async (app, html, data) => {
+export const onRender = async (app, html, data) => {
   const customDirectory = <string>getGame().settings.get(VOICE_ACTOR_MODULE_NAME, 'customDirectory') ?? '';
 
   // Get window-title from html so we can prepend our buttons
@@ -476,7 +485,3 @@ const onRender = async (app, html, data) => {
     }
   });
 };
-
-Hooks.on(`renderActorSheet`, onRender);
-
-Hooks.on(`renderJournalSheet`, onRender);

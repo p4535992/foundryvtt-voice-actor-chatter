@@ -104,6 +104,10 @@ Linked actor tokens will save their clip using the actor ID. This means your BBE
 
 Unlinked actor tokens will save their clip using the actor ID AND the actor name. This means, for example, all of your "Commoner"s will share a clip, except tokens you spawn and then change the name of. Maybe there's a memorable NPC that uses the Commoner statblock - no problem! Spawn a Commoner, double click the token, change the token name to your NPC's name, then record your clip!
 
+# Macro Voice Actor Chatter
+
+
+
 # Build
 
 ## Install all packages

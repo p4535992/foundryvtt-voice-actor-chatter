@@ -5,47 +5,54 @@ export class VoiceActorChatter {
   static timer;
 
   getChatterTables = function () {
-    const voiceActorFolder = <Folder>getGame().folders?.contents.filter(
-      (x) => x.type == 'RollTable' && x.name?.toLowerCase() == 'voice actor',
-    )[0];
-    const tables = <RollTable[]>getGame().tables?.contents.filter(
-      (x) => x.name?.toLowerCase().endsWith('voice') || x.data.folder == voiceActorFolder._id,
+    const voiceActorFolder = <Folder>(
+      getGame().folders?.contents.filter((x) => x.type == 'RollTable' && x.name?.toLowerCase() == 'voice actor')[0]
+    );
+    const tables = <RollTable[]>(
+      getGame().tables?.contents.filter(
+        (x) => x.name?.toLowerCase().endsWith('voice') || x.data.folder == voiceActorFolder._id,
+      )
     );
     return tables;
   };
 
-  // randomGlobalChatterEvery(milliseconds, options = {}) {
-  //   VoiceActorChatter.timer = window.setInterval(() => {
-  //     getGame().VoiceActorChatter?.globalChatter(options);
-  //   }, milliseconds);
-  // }
+  randomGlobalChatterEvery(milliseconds, options = {}) {
+    VoiceActorChatter.timer = window.setInterval(() => {
+      //@ts-ignore
+      getGame().voiceActorChatter?.globalChatter(options);
+    }, milliseconds);
+  }
 
   async globalChatter(options = {}) {
-    const tables:RollTable[] = this.getChatterTables();
+    const tables: RollTable[] = this.getChatterTables();
 
     const userCharacterActorIds = <string[]>getGame()
-      .users?.contents.filter((x:User) => x.character)
+      .users?.contents.filter((x: User) => x.character)
       .map((x) => x.character?.id);
-    const activeScene = <Scene>getGame().scenes?.filter((x:Scene) => x.active)[0];
-    const npcTokens = activeScene.data.tokens.filter((x:TokenDocument) => !userCharacterActorIds.includes(<string>x.actor?.id));
+    const activeScene = <Scene>getGame().scenes?.filter((x: Scene) => x.active)[0];
+    const npcTokens = <TokenDocument[]>activeScene.data.tokens.filter(
+      (x: TokenDocument) => !userCharacterActorIds.includes(<string>x.actor?.id),
+    );
 
-    const eligableTables:RollTable[] = tables.filter((x:RollTable) =>
-      npcTokens.filter((t:TokenDocument) => x.name?.toLowerCase().includes(t.name?.toLowerCase().replace('voice', '').trim())),
+    const eligableTables: RollTable[] = tables.filter((x: RollTable) =>
+      npcTokens.filter((t: TokenDocument) =>
+        x.name?.toLowerCase().includes(t.name?.toLowerCase().replace(' voice', '').trim()),
+      ),
     );
 
     const tableIndex = Math.floor(Math.random() * eligableTables.length + 0);
     const table = eligableTables[tableIndex];
 
-    const eligableTokens = npcTokens.filter((x:TokenDocument) =>
-      x.name?.toLowerCase().includes(<string>table.name?.toLowerCase().replace('voice', '').trim()),
+    const eligableTokens = npcTokens.filter((x: TokenDocument) =>
+      x.name?.toLowerCase().includes(<string>table.name?.toLowerCase().replace(' voice', '').trim()),
     );
 
     const tokenIndex = Math.floor(Math.random() * eligableTokens.length + 0);
     const token = eligableTokens[tokenIndex];
 
     if (token == undefined) return;
-    //@ts-ignore
-    const roll = await table.document.roll();
+
+    const roll = await table.data.document.roll();
     const result = roll.results[0].data.text;
 
     // Print on chat (Integration with NPCChatter)
@@ -55,26 +62,30 @@ export class VoiceActorChatter {
     // });
     // const emote = Object.keys(options).length ? {emote: options} : false;
     //await getCanvas().hud.bubbles.say(token.data, result, emote);
+    
+    const tokenTmp = <Token>getCanvas().tokens?.placeables.find(
+      (token: Token) => token.data._id === token.id,
+    )
 
     // Play Sounds
-    const fileClipPlayPath = await VoiceActor.getClipFromRollTableRow(token.data, '', result, false);
+    // const fileClipPlayPath = await VoiceActor.getClipFromRollTableRow(tokenTmp, result, false);
     // Play file
-    VoiceActor.playClip(fileClipPlayPath, true);
+    VoiceActor.playClip(result, true);
   }
 
-  async tokenChatter(token:Token, options = {}) {
-    const tables:RollTable[] = this.getChatterTables();
+  async tokenChatter(token: Token, options = {}) {
+    const tables: RollTable[] = this.getChatterTables();
 
     const eligableTables = tables.filter((x) =>
-      token.name.toLowerCase().includes(<string>x.name?.toLowerCase().replace('voice', '').trim()),
+      token.name.toLowerCase().includes(<string>x.name?.toLowerCase().replace(' voice', '').trim()),
     );
 
     if (eligableTables.length == 0) return;
 
     const tableIndex = Math.floor(Math.random() * eligableTables.length + 0);
-    const table:RollTable = eligableTables[tableIndex];
-    //@ts-ignore
-    const roll = await table.document.roll();
+    const table: RollTable = eligableTables[tableIndex];
+
+    const roll = await table.data.document.roll();
     const result = roll.results[0].data.text;
 
     // Print on chat (Integration with NPCChatter)
@@ -86,9 +97,9 @@ export class VoiceActorChatter {
     // await getCanvas().hud.bubbles.say(token.data, result, emote);
 
     // Play Sounds
-    const fileClipPlayPath = await VoiceActor.getClipFromRollTableRow(token.data, '', result, false);
+    // const fileClipPlayPath = await VoiceActor.getClipFromRollTableRow(token, '', result, false);
     // Play file
-    VoiceActor.playClip(fileClipPlayPath, true);
+    VoiceActor.playClip(result, true);
   }
 
   async selectedChatter(options = {}) {
@@ -97,22 +108,22 @@ export class VoiceActorChatter {
     const npcTokens = <Token[]>getCanvas().tokens?.controlled;
 
     const eligableTables = tables.filter((x) =>
-      npcTokens.filter((t:Token) => x.name?.toLowerCase().includes(t.name?.toLowerCase().replace('voice', '').trim())),
+      npcTokens.filter((t: Token) => x.name?.toLowerCase().includes(t.name?.toLowerCase().replace(' voice', '').trim())),
     );
 
     if (eligableTables.length == 0) return;
 
     const tableIndex = Math.floor(Math.random() * eligableTables.length + 0);
-    const table:RollTable = eligableTables[tableIndex];
+    const table: RollTable = eligableTables[tableIndex];
 
-    const eligableTokens = npcTokens.filter((x:Token) =>
-      x.name?.toLowerCase().includes(<string>table.name?.toLowerCase().replace('voice', '').trim())
+    const eligableTokens = npcTokens.filter((x: Token) =>
+      x.name?.toLowerCase().includes(<string>table.name?.toLowerCase().replace(' voice', '').trim()),
     );
 
     const tokenIndex = Math.floor(Math.random() * eligableTokens.length + 0);
     const token = eligableTokens[tokenIndex];
-    //@ts-ignore
-    const roll = await table.document.roll();
+
+    const roll = await table.data.document.roll();
     const result = roll.results[0].data.text;
 
     // Print on chat (Integration with NPCChatter)
@@ -124,9 +135,9 @@ export class VoiceActorChatter {
     // await getCanvas().hud.bubbles.say(token, result, emote);
 
     // Play Sounds
-    const fileClipPlayPath = await VoiceActor.getClipFromRollTableRow(token.data, '', result, false);
+    // const fileClipPlayPath = await VoiceActor.getClipFromRollTableRow(token, '', result, false);
     // Play file
-    VoiceActor.playClip(fileClipPlayPath, true);
+    VoiceActor.playClip(result, true);
   }
 
   async turnOffGlobalTimerChatter() {

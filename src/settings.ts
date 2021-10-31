@@ -1,4 +1,4 @@
-import SoundPicker from "./libs/SoundPicker";
+import SoundPicker from './libs/SoundPicker';
 
 export const VOICE_ACTOR_MODULE_NAME = 'foundryvtt-voice-actor';
 
@@ -35,7 +35,7 @@ export function getGame(): Game {
 }
 
 export const registerSettings = function () {
-  getGame().settings.register('VoiceActor', 'playersRecordOwned', {
+  getGame().settings.register(VOICE_ACTOR_MODULE_NAME, 'playersRecordOwned', {
     name: 'VOICEACTOR.settings.players-record-owned.name',
     hint: 'VOICEACTOR.settings.players-record-owned.hint',
     scope: 'world',
@@ -44,7 +44,7 @@ export const registerSettings = function () {
     type: Boolean,
   });
 
-  getGame().settings.register('VoiceActor', 'playersPlaybackLimited', {
+  getGame().settings.register(VOICE_ACTOR_MODULE_NAME, 'playersPlaybackLimited', {
     name: 'VOICEACTOR.settings.players-playback-limited.name',
     hint: 'VOICEACTOR.settings.players-playback-limited.hint',
     scope: 'world',
@@ -53,15 +53,16 @@ export const registerSettings = function () {
     type: Boolean,
   });
 
-  getGame().settings.register('VoiceActor', 'customDirectory', {
+  getGame().settings.register(VOICE_ACTOR_MODULE_NAME, 'customDirectory', {
     name: getGame().i18n.localize('VOICEACTOR.settings.customDirectory.name'),
     hint: getGame().i18n.localize('VOICEACTOR.settings.customDirectory.hint'),
     scope: 'world',
     config: true,
-    default: '',
-    // type: String,
-    // filePicker: 'audio',
+    default: `/worlds/${getGame().world.id}/${VOICE_ACTOR_MODULE_NAME}`,
+    type: String,
     //@ts-ignore
-    type: SoundPicker.Sound, //audioTypeFunc,
+    filePicker: 'audio',
+    //@ts-ignore
+    // type: SoundPicker.Sound, //audioTypeFunc,
   });
 };
