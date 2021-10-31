@@ -1,9 +1,11 @@
 # 0.2.0 - 
 
+- Convert project to typescript
 - Integration of ecma scirpt module
 - Add mutliclips management
 - Add integration with rolltable for random sounds (inspired from npc chatter)
 - Add custom directory as module settings
+- Add integration with rolltable
 
 # 0.1.2 - 2021/08/09
 

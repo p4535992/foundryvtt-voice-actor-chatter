@@ -1,9 +1,8 @@
-# Voice Actor for FVTT
+# Voice Actor Chatter for FVTT
 
-![VoiceActor Release](https://github.com/BlitzKraig/fvtt-VoiceActor/workflows/VoiceActor%20Release/badge.svg)
-![Latest Release Download Count](https://img.shields.io/github/downloads/BlitzKraig/fvtt-VoiceActor/latest/voiceactor-release.zip)
+This module was born as a union of the features of the two [Voice Actor for FVTT by Blitz](https://github.com/BlitzKraig/fvtt-VoiceActor) and [NPC Chatter](https://github.com/cswendrowski/FoundryVtt-Npc-Chatter).
 
-[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Q5Q01YIEJ)
+This module arises from the need together with the [Trigger Happy module]8) to randomize a set of items for the same actor through a customizable rollTable.
 
 ## Installation
 
@@ -13,7 +12,7 @@ To install this module manually:
 1.  Inside the Foundry "Configuration and Setup" screen, click "Add-on Modules"
 2.  Click "Install Module"
 3.  In the "Manifest URL" field, paste the following url:
-`https://raw.githubusercontent.com/p4535992/fvtt-VoiceActor/master/src/module.json`
+`https://raw.githubusercontent.com/p4535992/foundryvtt-voice-actor-chatter/master/src/module.json`
 4.  Click 'Install' and wait for installation to complete
 5.  Don't forget to enable the module in game using the "Manage Module" button
 
@@ -106,7 +105,90 @@ Unlinked actor tokens will save their clip using the actor ID AND the actor name
 
 # Macro Voice Actor Chatter
 
+# Usage
 
+Chatter can only be triggered via scripting. There are a few Macros included as examples - most work out of the box, but some require additional setup.
+
+The easiest macro is the "Timed Global Chatter" macro - just slap it when a Scene Loads, and they will start chattering!
+
+## Trigger Happy
+
+[Trigger Happy](https://github.com/kakaroto/fvtt-module-trigger-happy) can trigger NPC chatter as well. Here's an example to get you started:
+
+When an Actor walks into a Room (defined by an invisble actor), have a specific Token chatter: `@Actor[TriggerA] @Macro[OXyjmVhEGo3eTaJz]{Specific Token Chatter}`
+
+# API
+
+## Actor Voice Global Chatter
+
+Picks a random Chatter Table belonging to a random Actor on the first active scene and play a audio file with rolled Text off of the random Chatter Table.
+
+```js
+async globalChatter()
+```
+
+Macro code:
+
+```js
+game.voiceActorChatter.globalChatter()
+```
+
+## Global Chatter Every Interval
+
+Every interval as measured in milliseconds, executes `globalChatter()`.
+
+```js
+randomGlobalChatterEvery(milliseconds)
+```
+
+Macro code:
+
+```js
+game.voiceActorChatter.randomGlobalChatterEvery(milliseconds)
+```
+
+## Disable Global Chatter
+
+Clears out the timer on `randomGlobalChatterEvery`
+
+```js
+turnOffGlobalTimerChatter()
+```
+
+Macro code:
+
+```js
+game.voiceActorChatter.turnOffGlobalTimerChatter()
+```
+
+## Token Chatter
+
+Given a `Token`, tries to find a matching Chatter Table. If none, exits. If one or more, randomly picks one and displays a rolled result from it as a ChatBubble.
+
+```js
+async tokenChatter(token)
+```
+
+Macro code:
+
+```js
+var token = game.scenes.filter(x => x.active)[0].data.tokens.filter(x => x.name == "Human Thug C")[0];
+game.voiceActorChatter.tokenChatter(token);
+```
+
+## Selected Chatter
+
+Grabs the currently selected Tokens and tries to find matching Chatter Tables. If none, exits. If one or more, randomly picks one and an elibable Token and displays a rolled result from the Table as a ChatBubble.
+
+```js
+  async selectedChatter()
+```
+
+Macro code:
+
+```js
+game.voiceActorChatter.selectedChatter()
+```
 
 # Build
 
@@ -187,11 +269,19 @@ npm run-script package
 
 ## Issues
 
-Any issues, bugs, or feature requests are always welcome to be reported directly to the [Issue Tracker](https://github.com/p4535992/fvtt-VoiceActor/issues ), or using the [Bug Reporter Module](https://foundryvtt.com/packages/bug-reporter/).
+Any issues, bugs, or feature requests are always welcome to be reported directly to the [Issue Tracker](https://github.com/p4535992/foundryvtt-voice-actor-chatter/issues ), or using the [Bug Reporter Module](https://foundryvtt.com/packages/bug-reporter/).
 
 ## License
 
-This package is under an [MIT license](LICENSE) and the [Foundry Virtual Tabletop Limited License Agreement for module development](https://foundryvtt.com/article/license/).
+- [NPC Chatter](https://github.com/cswendrowski/FoundryVtt-Npc-Chatter) - [GPL 3.0](https://github.com/cswendrowski/FoundryVtt-Npc-Chatter/blob/master/LICENSE.md)
+- [Voice Actor for FVTT by Blitz](https://github.com/BlitzKraig/fvtt-VoiceActor) - [MIT](https://github.com/BlitzKraig/fvtt-VoiceActor/blob/master/LICENSE)
+
+This package is under an [GPL 3.0 license](LICENSE) and the [Foundry Virtual Tabletop Limited License Agreement for module development](https://foundryvtt.com/article/license/).
+
+# Credit
+
+- [NPC Chatter](https://github.com/cswendrowski/FoundryVtt-Npc-Chatter)
+- [Voice Actor for FVTT by Blitz](https://github.com/BlitzKraig/fvtt-VoiceActor)
 
 ## Acknowledgements
 
