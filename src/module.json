@@ -44,12 +44,12 @@
   "minimumCoreVersion": "0.8.6",
   "compatibleCoreVersion": "0.8.9",
   "manifestPlusVersion": "1.2.1",
-  "url": "https://github.com/p4535992/foundryvtt-voice-actor",
-  "manifest": "https://github.com/p4535992/foundryvtt-voice-actor/releases/latest/download/module.json",
-  "download": "https://github.com/p4535992/foundryvtt-voice-actor/releases/download/v0.2.0/module.zip",
-  "readme": "https://github.com/p4535992/foundryvtt-voice-actor/blob/v0.2.0/README.md",
-  "changelog": "https://github.com/p4535992/foundryvtt-voice-actor/blob/v0.2.0/changelog.md",
-  "bugs": "https://github.com/p4535992/foundryvtt-voice-actor/issues",
+  "url": "https://github.com/p4535992/fvtt-VoiceActor",
+  "manifest": "https://github.com/p4535992/fvtt-VoiceActor/releases/latest/download/module.json",
+  "download": "https://github.com/p4535992/fvtt-VoiceActor/releases/download/v0.2.0/module.zip",
+  "readme": "https://github.com/p4535992/fvtt-VoiceActor/blob/v0.2.0/README.md",
+  "changelog": "https://github.com/p4535992/fvtt-VoiceActor/blob/v0.2.0/changelog.md",
+  "bugs": "https://github.com/p4535992/fvtt-VoiceActor/issues",
   "allowBugReporter": true,
   "dependencies": []
 }
