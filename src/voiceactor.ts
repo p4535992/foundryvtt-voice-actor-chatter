@@ -24,12 +24,12 @@ export class VoiceActor {
     );
     // Check if file exists already
     const fileName = textResult;
-    return VoiceActor.getFile(vaDir.files, fileName);
+    return <string>VoiceActor.getFile(vaDir.files, fileName);
   };
 
-  static getClip = async (data, customDirectory, isJournal) => {
+  static getClip = async (data:TokenData, customDirectory:string, isJournal:boolean) => {
     if (!customDirectory) {
-      customDirectory = getGame().settings.get(VOICE_ACTOR_MODULE_NAME, 'customDirectory') ?? '';
+      customDirectory = <string>getGame().settings.get(VOICE_ACTOR_MODULE_NAME, 'customDirectory') ?? '';
     }
 
     const nameActorFolder = VoiceActor.getClipActorFolderName(data);
@@ -46,27 +46,27 @@ export class VoiceActor {
     return VoiceActor.getFile(vaDir.files, fileName);
   };
 
-  static getClipActorFolderName = function (data) {
-    const fileName = `${data.actor._id}-${data.actor.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}`;
+  static getClipActorFolderName = function (data:TokenData) {
+    const fileName = `${data.actorId}-${data.actorData?.name?.replace(/[^a-z0-9]/gi, '_').toLowerCase()}`;
     return fileName;
   };
 
-  static getClipActorFileName = function (data, isJournal) {
+  static getClipActorFileName = function (data:TokenData, isJournal:boolean) {
     // Check if file exists already
     let fileName;
     if (isJournal) {
-      fileName = `${data.entity._id}.wav`;
+      fileName = `${data._id}.wav`;
     } else {
-      if (data.actor.token.actorLink) {
-        fileName = `${data.actor._id}.wav`;
+      if (data.actorLink) {
+        fileName = `${data.actorId}.wav`;
       } else {
-        fileName = `${data.actor._id}-${data.actor.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.wav`;
+        fileName = `${data.actorId}-${data.actorData?.name?.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.wav`;
       }
     }
     return fileName;
   };
 
-  static getFile = (filesArray, filename) => {
+  static getFile = (filesArray:string[], filename:string) => {
     const file = filesArray.find((el) => el.includes(filename));
     return file || false;
   };
@@ -81,7 +81,7 @@ export class VoiceActor {
     }
   };
 
-  static playClip = async function (clip, toAllWithSocket) {
+  static playClip = async function (clip:string, toAllWithSocket:boolean) {
     // let playVolume = getGame().settings.get("core", "globalInterfaceVolume"); // TODO CUSTOMIZE WITH MODULE SETTINGS ???
     // AudioHelper.play({src: fileClipPlayPath, volume: playVolume, autoplay: true, loop: false}, true);
     // Audio file to be played back
@@ -282,7 +282,7 @@ export const readyHooks = async () => {
 };
 
 const onRender = async (app, html, data) => {
-  const customDirectory = getGame().settings.get(VOICE_ACTOR_MODULE_NAME, 'customDirectory') ?? '';
+  const customDirectory = <string>getGame().settings.get(VOICE_ACTOR_MODULE_NAME, 'customDirectory') ?? '';
 
   // Get window-title from html so we can prepend our buttons
   const title = html.find('.window-title');

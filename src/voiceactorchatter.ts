@@ -86,7 +86,7 @@ export class VoiceActorChatter {
     // await getCanvas().hud.bubbles.say(token.data, result, emote);
 
     // Play Sounds
-    const fileClipPlayPath = VoiceActor.getClipFromRollTableRow(token.data, '', result, false);
+    const fileClipPlayPath = await VoiceActor.getClipFromRollTableRow(token.data, '', result, false);
     // Play file
     VoiceActor.playClip(fileClipPlayPath, true);
   }
@@ -124,7 +124,7 @@ export class VoiceActorChatter {
     // await getCanvas().hud.bubbles.say(token, result, emote);
 
     // Play Sounds
-    const fileClipPlayPath = VoiceActor.getClipFromRollTableRow(token.data, '', result, false);
+    const fileClipPlayPath = await VoiceActor.getClipFromRollTableRow(token.data, '', result, false);
     // Play file
     VoiceActor.playClip(fileClipPlayPath, true);
   }
