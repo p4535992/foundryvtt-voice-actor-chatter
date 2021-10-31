@@ -1,13 +1,36 @@
 {
-  "name": "VoiceActor",
+  "name": "foundryvtt-voice-actor",
   "title": "VoiceActor by Blitz",
   "description": "'Wait, what did they sound like again?'. Save a voice clip to an actor to playback, and remind yourself what dumb voice you used.",
-  "version": "0.1.2",
-  "author": "Blitzkraig",
-  "scripts": [],
-  "esmodules": ["foundryvtt-arms-reach.js"],
-  "styles": ["styles/va.css"],
-  "packs": [],
+  "version": "0.2.0",
+  "author": "Blitzkraig, p4535992",
+  "type": "module",
+  "socket": true,
+  "includes": [
+    "./assets/**",
+    "./lang/**",
+    "./scripts/**",
+    "./styles/**",
+    "./templates/**",
+    "./module.json",
+    "./README.md",
+    "./icons/**",
+    "./packs/**"
+  ],
+  "media": [
+    {
+      "type": "icon",
+      "location": ""
+    },
+    {
+      "type": "cover",
+      "location": ""
+    },
+    {
+      "type": "screenshot",
+      "location": ""
+    }
+  ],
   "languages": [
     {
       "lang": "en",
@@ -15,9 +38,18 @@
       "path": "lang/en.json"
     }
   ],
-  "minimumCoreVersion": "0.7.0",
-  "compatibleCoreVersion": "0.8.8",
-  "url": "https://github.com/BlitzKraig/fvtt-VoiceActor",
-  "manifest": "https://raw.githubusercontent.com/BlitzKraig/fvtt-VoiceActor/master/module.json",
-  "download": "https://github.com/BlitzKraig/fvtt-VoiceActor/releases/download/latest/voiceactor-release.zip"
+  "scripts": [],
+  "esmodules": ["main.js"],
+  "styles": ["styles/va.css"],
+  "minimumCoreVersion": "0.8.6",
+  "compatibleCoreVersion": "0.8.9",
+  "manifestPlusVersion": "1.2.1",
+  "url": "https://github.com/p4535992/foundryvtt-voice-actor",
+  "manifest": "https://github.com/p4535992/foundryvtt-voice-actor/releases/latest/download/module.json",
+  "download": "https://github.com/p4535992/foundryvtt-voice-actor/releases/download/v2.1.1/module.zip",
+  "readme": "https://github.com/p4535992/foundryvtt-voice-actor/blob/v2.1.1/README.md",
+  "changelog": "https://github.com/p4535992/foundryvtt-voice-actor/blob/v2.1.1/changelog.md",
+  "bugs": "https://github.com/p4535992/foundryvtt-voice-actor/issues",
+  "allowBugReporter": true,
+  "dependencies": []
 }

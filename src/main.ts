@@ -11,66 +11,62 @@
  */
 // Import JavaScript modules
 // Import TypeScript modules
-import { getGame, registerSettings } from "./module/settings.js";
-import { preloadTemplates } from "./module/preloadTemplates.js";
-import { ARMS_REACH_MODULE_NAME } from "./module/settings.js";
-import { initHooks, readyHooks, setupHooks } from "./module/Hooks.js";
+
+import { getGame, registerSettings, VOICE_ACTOR_MODULE_NAME } from './settings';
+import { readyHooks } from './voiceactor';
+
 export let debugEnabled = 0;
 // 0 = none, warnings = 1, debug = 2, all = 3
 export const debug = (...args) => {
-    if (debugEnabled > 1)
-        console.log(`DEBUG:${ARMS_REACH_MODULE_NAME} | `, ...args);
+  if (debugEnabled > 1) console.log(`DEBUG:${VOICE_ACTOR_MODULE_NAME} | `, ...args);
 };
-export const log = (...args) => console.log(`${ARMS_REACH_MODULE_NAME} | `, ...args);
+export const log = (...args) => console.log(`${VOICE_ACTOR_MODULE_NAME} | `, ...args);
 export const warn = (...args) => {
-    if (debugEnabled > 0)
-        console.warn(`${ARMS_REACH_MODULE_NAME} | `, ...args);
+  if (debugEnabled > 0) console.warn(`${VOICE_ACTOR_MODULE_NAME} | `, ...args);
 };
-export const error = (...args) => console.error(`${ARMS_REACH_MODULE_NAME} | `, ...args);
-export const timelog = (...args) => warn(`${ARMS_REACH_MODULE_NAME} | `, Date.now(), ...args);
+export const error = (...args) => console.error(`${VOICE_ACTOR_MODULE_NAME} | `, ...args);
+export const timelog = (...args) => warn(`${VOICE_ACTOR_MODULE_NAME} | `, Date.now(), ...args);
 export const i18n = (key) => {
-    return getGame().i18n.localize(key);
+  return getGame().i18n.localize(key);
 };
 export const i18nFormat = (key, data = {}) => {
-    return getGame().i18n.format(key, data);
+  return getGame().i18n.format(key, data);
 };
 export const setDebugLevel = (debugText) => {
-    debugEnabled = { none: 0, warn: 1, debug: 2, all: 3 }[debugText] || 0;
-    // 0 = none, warnings = 1, debug = 2, all = 3
-    if (debugEnabled >= 3)
-        CONFIG.debug.hooks = true;
+  debugEnabled = { none: 0, warn: 1, debug: 2, all: 3 }[debugText] || 0;
+  // 0 = none, warnings = 1, debug = 2, all = 3
+  if (debugEnabled >= 3) CONFIG.debug.hooks = true;
 };
 /* ------------------------------------ */
 /* Initialize module					*/
 /* ------------------------------------ */
 Hooks.once('init', async () => {
-    console.log(`${ARMS_REACH_MODULE_NAME} | Initializing ${ARMS_REACH_MODULE_NAME}`);
-    // Register custom module settings
-    // registerSettings();
-    // Assign custom classes and constants here
-    // initHooks();
-    // Preload Handlebars templates
-    // await preloadTemplates();
-    // Register custom sheets (if any)
+  log(`${VOICE_ACTOR_MODULE_NAME} | Initializing ${VOICE_ACTOR_MODULE_NAME}`);
+  // Register custom module settings
+  registerSettings();
+  // Assign custom classes and constants here
+  // initHooks();
+  // Preload Handlebars templates
+  // await preloadTemplates();
+  // Register custom sheets (if any)
 });
 /* ------------------------------------ */
 /* Setup module							*/
 /* ------------------------------------ */
 Hooks.once('setup', function () {
-    // Do anything after initialization but before ready
-    // setupModules();
-    //registerSettings();
-    // setupHooks();
+  // Do anything after initialization but before ready
+  // setupModules();
+  // setupHooks();
 });
 /* ------------------------------------ */
 /* When ready							*/
 /* ------------------------------------ */
 Hooks.once('ready', () => {
-    // Do anything once the module is ready
-    // if (!getGame().modules.get('lib-wrapper')?.active && getGame().user?.isGM) {
-    //     ui.notifications?.error(`The '${ARMS_REACH_MODULE_NAME}' module requires to install and activate the 'libWrapper' module.`);
-    //     return;
-    // }
-    readyHooks();
+  // Do anything once the module is ready
+  // if (!getGame().modules.get('lib-wrapper')?.active && getGame().user?.isGM) {
+  //     ui.notifications?.error(`The '${VOICE_ACTOR_MODULE_NAME}' module requires to install and activate the 'libWrapper' module.`);
+  //     return;
+  // }
+  readyHooks();
 });
 // Add any additional hooks if necessary
