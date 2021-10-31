@@ -1,5 +1,3 @@
-import { log } from '../../main';
-
 /**
  * Game Settings: Directory
  * @href https://github.com/MrPrimate/vtta-tokenizer/blob/master/src/libs/DirectoryPicker.js
