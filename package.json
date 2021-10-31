@@ -1,9 +1,9 @@
 {
   "private": true,
-  "name": "automated-evocations-variant",
-  "title": "Automated Evocations - Companion Manager Variant",
-  "description": "A user interface to manage companions with summoning animations and automated summoning for spells",
-  "version": "1.4.6",
+  "name": "foundryvtt-voice-actor-chatter",
+  "title": "FoundryVTT Voice Actor Chatter",
+  "description": "'Wait, what did they sound like again?'. Save a voice clip to an actor to playback, and remind yourself what dumb voice you used.",
+  "version": "0.2.1",
   "scripts": {
     "package": "gulp package",
     "build": "gulp clean && gulp build && gulp link",
