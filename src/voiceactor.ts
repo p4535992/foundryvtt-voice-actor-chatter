@@ -19,34 +19,34 @@ export class VoiceActor {
     const nameActorFolder = VoiceActor.getClipActorFolderName(data);
 
     // Create directories
-    try{
+    try {
       await FilePicker.createDirectory(
         //@ts-ignore
         VoiceActor.isForge() ? 'forgevtt' : 'data',
         `${customDirectory}`,
-        {}
+        {},
       );
-    }catch(e){
+    } catch (e) {
       // DO NOTHING
     }
-    try{
+    try {
       await FilePicker.createDirectory(
         //@ts-ignore
         VoiceActor.isForge() ? 'forgevtt' : 'data',
         `${customDirectory}/VoiceActor${isJournal ? '/Journal' : ''}`,
-        {}
+        {},
       );
-    }catch(e){
+    } catch (e) {
       // DO NOTHING
     }
-    try{
+    try {
       await FilePicker.createDirectory(
         //@ts-ignore
         VoiceActor.isForge() ? 'forgevtt' : 'data',
         `${customDirectory}/VoiceActor${isJournal ? '/Journal' : ''}/${nameActorFolder}`,
-        {}
+        {},
       );
-    }catch(e){
+    } catch (e) {
       // DO NOTHING
     }
 
@@ -76,7 +76,7 @@ export class VoiceActor {
       // if (data.actorLink) {
       //   fileName = `${data.actor.id}.wav`;
       // } else {
-        fileName = `${data.actor?._id}-${data.actor?.name?.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.wav`;
+      fileName = `${data.actor?._id}-${data.actor?.name?.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.wav`;
       // }
     }
     return fileName;
@@ -97,7 +97,7 @@ export class VoiceActor {
     }
   };
 
-  static playClipRandomFromToken = async function (token:Token){
+  static playClipRandomFromToken = async function (token: Token) {
     const voiceActorFolder = <Folder>(
       getGame().folders?.contents.filter((x) => x.type == 'RollTable' && x.name?.toLowerCase() == 'voice actor')[0]
     );
@@ -107,14 +107,14 @@ export class VoiceActor {
       )
     );
     const eligableTables: RollTable[] = tables.filter((t: RollTable) =>
-      token.name?.toLowerCase().includes(<string>t.name?.toLowerCase().replace(' voice', '').trim())
+      token.name?.toLowerCase().includes(<string>t.name?.toLowerCase().replace(' voice', '').trim()),
     );
-    const table:RollTable = eligableTables[0];
+    const table: RollTable = eligableTables[0];
 
     const roll = await table.data.document.roll();
     const clip = roll.results[0].data.text;
     this.playClip(clip, true);
-  }
+  };
 
   static playClip = async function (clip: string, toAllWithSocket: boolean) {
     // let playVolume = getGame().settings.get("core", "globalInterfaceVolume"); // TODO CUSTOMIZE WITH MODULE SETTINGS ???
@@ -196,7 +196,7 @@ export class VoiceActor {
     VoiceActor._onCreateResult(myTable, fileNamePath, fileName);
   };
 
-  static async _onCreateResult(rollTable: RollTable, fileNamePath:string, fileName: string) {
+  static async _onCreateResult(rollTable: RollTable, fileNamePath: string, fileName: string) {
     // event.preventDefault();
 
     // Save any pending changes
@@ -226,8 +226,7 @@ export class VoiceActor {
       range: range,
       drawn: false,
       text: fileNamePath,
-      img: ''
-
+      img: '',
     };
     return rollTable.data.document?.createEmbeddedDocuments('TableResult', [resultData]);
   }

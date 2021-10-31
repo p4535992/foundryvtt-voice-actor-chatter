@@ -1,7 +1,7 @@
-import { log, warn } from "./main";
-import { getCanvas, getGame, VOICE_ACTOR_MODULE_NAME } from "./settings";
-import { onRender, VoiceActor } from "./voiceactor";
-import { VoiceActorChatter } from "./voiceactorchatter";
+import { log, warn } from './main';
+import { getCanvas, getGame, VOICE_ACTOR_MODULE_NAME } from './settings';
+import { onRender, VoiceActor } from './voiceactor';
+import { VoiceActorChatter } from './voiceactorchatter';
 
 export const readyHooks = async () => {
   // setup all the hooks
@@ -14,8 +14,11 @@ export const readyHooks = async () => {
     const customDirectory = getGame().settings.get(VOICE_ACTOR_MODULE_NAME, 'customDirectory') ?? '';
     // Ensure the VA dir exists
     try {
-      //@ts-ignore
-      await FilePicker.createDirectory(VoiceActor.isForge() ? 'forgevtt' : 'data', `${customDirectory}/${VOICE_ACTOR_MODULE_NAME}}`);
+      await FilePicker.createDirectory(
+        //@ts-ignore
+        VoiceActor.isForge() ? 'forgevtt' : 'data',
+        `${customDirectory}/${VOICE_ACTOR_MODULE_NAME}}`,
+      );
     } catch (e) {
       if (!String(e.message).startsWith('EEXIST')) {
         log(e);
@@ -37,7 +40,7 @@ export const readyHooks = async () => {
   // Voice Chatter
   //@ts-ignore
   getGame().voiceActorChatter = new VoiceActorChatter();
-  log("Is now ready");
+  log('Is now ready');
 
   getGame().socket?.on(`module.${VOICE_ACTOR_MODULE_NAME}`, async (toShow) => {
     //log("Got token " + toShow.tokenId + " with text " + toShow.msg);

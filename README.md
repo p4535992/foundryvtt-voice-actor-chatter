@@ -1,6 +1,6 @@
 # Voice Actor Chatter for FVTT
 
-This module was born as a union of the features of the two [Voice Actor for FVTT by Blitz](https://github.com/BlitzKraig/fvtt-VoiceActor) and [NPC Chatter](https://github.com/cswendrowski/FoundryVtt-Npc-Chatter).
+This module was born as a union of the features of the two [Voice Actor for FVTT by Blitz](https://github.com/BlitzKraig/fvtt-VoiceActor) and [Voice Actor Chatter](https://github.com/cswendrowski/FoundryVtt-Npc-Chatter).
 
 This module arises from the need together with the [Trigger Happy module]8) to randomize a set of items for the same actor through a customizable rollTable.
 
@@ -113,7 +113,7 @@ The easiest macro is the "Timed Global Chatter" macro - just slap it when a Scen
 
 ## Trigger Happy
 
-[Trigger Happy](https://github.com/kakaroto/fvtt-module-trigger-happy) can trigger NPC chatter as well. Here's an example to get you started:
+[Trigger Happy](https://github.com/kakaroto/fvtt-module-trigger-happy) can trigger Voice Actor Chatter as well. Here's an example to get you started:
 
 When an Actor walks into a Room (defined by an invisble actor), have a specific Token chatter: `@Actor[TriggerA] @Macro[OXyjmVhEGo3eTaJz]{Specific Token Chatter}`
 
@@ -273,14 +273,14 @@ Any issues, bugs, or feature requests are always welcome to be reported directly
 
 ## License
 
-- [NPC Chatter](https://github.com/cswendrowski/FoundryVtt-Npc-Chatter) - [GPL 3.0](https://github.com/cswendrowski/FoundryVtt-Npc-Chatter/blob/master/LICENSE.md)
+- [Voice Actor Chatter](https://github.com/cswendrowski/FoundryVtt-Npc-Chatter) - [GPL 3.0](https://github.com/cswendrowski/FoundryVtt-Npc-Chatter/blob/master/LICENSE.md)
 - [Voice Actor for FVTT by Blitz](https://github.com/BlitzKraig/fvtt-VoiceActor) - [MIT](https://github.com/BlitzKraig/fvtt-VoiceActor/blob/master/LICENSE)
 
 This package is under an [GPL 3.0 license](LICENSE) and the [Foundry Virtual Tabletop Limited License Agreement for module development](https://foundryvtt.com/article/license/).
 
 # Credit
 
-- [NPC Chatter](https://github.com/cswendrowski/FoundryVtt-Npc-Chatter)
+- [Voice Actor Chatter](https://github.com/cswendrowski/FoundryVtt-Npc-Chatter)
 - [Voice Actor for FVTT by Blitz](https://github.com/BlitzKraig/fvtt-VoiceActor)
 
 ## Acknowledgements

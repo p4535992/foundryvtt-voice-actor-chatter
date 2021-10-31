@@ -30,8 +30,8 @@ export class VoiceActorChatter {
       .users?.contents.filter((x: User) => x.character)
       .map((x) => x.character?.id);
     const activeScene = <Scene>getGame().scenes?.filter((x: Scene) => x.active)[0];
-    const npcTokens = <TokenDocument[]>activeScene.data.tokens.filter(
-      (x: TokenDocument) => !userCharacterActorIds.includes(<string>x.actor?.id),
+    const npcTokens = <TokenDocument[]>(
+      activeScene.data.tokens.filter((x: TokenDocument) => !userCharacterActorIds.includes(<string>x.actor?.id))
     );
 
     const eligableTables: RollTable[] = tables.filter((x: RollTable) =>
@@ -62,10 +62,8 @@ export class VoiceActorChatter {
     // });
     // const emote = Object.keys(options).length ? {emote: options} : false;
     //await getCanvas().hud.bubbles.say(token.data, result, emote);
-    
-    const tokenTmp = <Token>getCanvas().tokens?.placeables.find(
-      (token: Token) => token.data._id === token.id,
-    )
+
+    const tokenTmp = <Token>getCanvas().tokens?.placeables.find((token: Token) => token.data._id === token.id);
 
     // Play Sounds
     // const fileClipPlayPath = await VoiceActor.getClipFromRollTableRow(tokenTmp, result, false);
@@ -108,7 +106,9 @@ export class VoiceActorChatter {
     const npcTokens = <Token[]>getCanvas().tokens?.controlled;
 
     const eligableTables = tables.filter((x) =>
-      npcTokens.filter((t: Token) => x.name?.toLowerCase().includes(t.name?.toLowerCase().replace(' voice', '').trim())),
+      npcTokens.filter((t: Token) =>
+        x.name?.toLowerCase().includes(t.name?.toLowerCase().replace(' voice', '').trim()),
+      ),
     );
 
     if (eligableTables.length == 0) return;
