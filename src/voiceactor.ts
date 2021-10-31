@@ -5,15 +5,15 @@
 import { TokenData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
 import { BaseTableResult } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/documents.mjs';
 import { warn } from './main';
-import { getGame, VOICE_ACTOR_MODULE_NAME } from './settings';
+import { getGame, VOICE_ACTOR_CHATTER_MODULE_NAME } from './settings';
 import { VoiceActorChatter } from './voiceactorchatter';
 
 export class VoiceActor {
-  static moduleName = VOICE_ACTOR_MODULE_NAME;
+  static moduleName = VOICE_ACTOR_CHATTER_MODULE_NAME;
 
-  static getClip = async (data: Token, customDirectory: string, isJournal: boolean) => {
+  static getClip = async (data: Token, customDirectory: string, isJournal: boolean):Promise<{file:string, name:string}> => {
     if (!customDirectory) {
-      customDirectory = <string>getGame().settings.get(VOICE_ACTOR_MODULE_NAME, 'customDirectory') ?? '';
+      customDirectory = <string>getGame().settings.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'customDirectory') ?? '';
     }
 
     const nameActorFolder = VoiceActor.getClipActorFolderName(data);
@@ -57,9 +57,13 @@ export class VoiceActor {
       `${customDirectory}/VoiceActor${isJournal ? '/Journal' : ''}/${nameActorFolder}`,
     );
     // Check if file exists already
-    const fileName = VoiceActor.getClipActorFileName(data, isJournal);
-
-    return VoiceActor.getFile(vaDir.files, fileName);
+    // const fileName = VoiceActor.getClipActorFileName(data, isJournal);
+    const fileName = `${data.actor?._id}-${data.actor?.name?.replace(/[^a-z0-9]/gi, '_').toLowerCase()}-${VoiceActor.generateUUID()}.wav`;
+    const clip = <string>VoiceActor.getFile(vaDir.files, fileName);
+    return {
+      file : clip,
+      name: fileName
+    }
   };
 
   static getClipActorFolderName = function (data: Token) {
@@ -67,24 +71,41 @@ export class VoiceActor {
     return fileName;
   };
 
-  static getClipActorFileName = function (data: Token, isJournal: boolean) {
-    // Check if file exists already
-    let fileName;
-    if (isJournal) {
-      fileName = `${data.actor?._id}.wav`;
-    } else {
-      // if (data.actorLink) {
-      //   fileName = `${data.actor.id}.wav`;
-      // } else {
-      fileName = `${data.actor?._id}-${data.actor?.name?.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.wav`;
-      // }
-    }
-    return fileName;
-  };
+  // static getClipActorFileName = function (data: Token, isJournal: boolean) {
+  //   // Check if file exists already
+  //   // let fileName;
+  //   // if (isJournal) {
+  //   //   fileName = `${data.actor?._id}.wav`;
+  //   // } else {
+  //     // if (data.actorLink) {
+  //     //   fileName = `${data.actor.id}.wav`;
+  //     // } else {
+  //     // fileName = `${data.actor?._id}-${data.actor?.name?.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.wav`;
+  //     // }
+  //   // }
+  //   const fileName = `${data.actor?._id}-${data.actor?.name?.replace(/[^a-z0-9]/gi, '_').toLowerCase()}-${VoiceActor.generateUUID()}.wav`;
+  //   return fileName;
+  // };
+
+  static generateUUID = function() { // Public Domain/MIT
+    let d = new Date().getTime();//Timestamp
+    let d2 = ((typeof performance !== 'undefined') && performance.now && (performance.now()*1000)) || 0;//Time in microseconds since page-load or 0 if unsupported
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        let r = Math.random() * 16;//random number between 0 and 16
+        if(d > 0){//Use timestamp until depleted
+            r = (d + r)%16 | 0;
+            d = Math.floor(d/16);
+        } else {//Use microseconds since page-load if supported
+            r = (d2 + r)%16 | 0;
+            d2 = Math.floor(d2/16);
+        }
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+  }
 
   static getFile = (filesArray: string[], filename: string) => {
     const file = filesArray.find((el) => el.includes(filename));
-    return file || false;
+    return file || '';
   };
 
   static isForge = () => {
@@ -226,7 +247,7 @@ export class VoiceActor {
       range: range,
       drawn: false,
       text: fileNamePath,
-      img: '',
+      img: 'icons/svg/d20-black.svg',
     };
     return rollTable.data.document?.createEmbeddedDocuments('TableResult', [resultData]);
   }
@@ -290,7 +311,7 @@ export class VoiceActor {
 }
 
 export const onRender = async (app, html, data) => {
-  const customDirectory = <string>getGame().settings.get(VOICE_ACTOR_MODULE_NAME, 'customDirectory') ?? '';
+  const customDirectory = <string>getGame().settings.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'customDirectory') ?? '';
 
   // Get window-title from html so we can prepend our buttons
   const title = html.find('.window-title');
@@ -320,7 +341,7 @@ export const onRender = async (app, html, data) => {
   if (
     getGame().user?.isGM ||
     (data.owner &&
-      getGame().settings?.get(VOICE_ACTOR_MODULE_NAME, 'playersRecordOwned') &&
+      getGame().settings?.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'playersRecordOwned') &&
       getGame().user?.hasPermission('FILES_UPLOAD'))
   ) {
     buttons += `<button id="voiceactor-record" class="voiceactor-button" title="${getGame().i18n.localize(
@@ -330,7 +351,7 @@ export const onRender = async (app, html, data) => {
         </button>`;
   }
 
-  if (getGame().user?.isGM || data.owner || getGame().settings.get(VOICE_ACTOR_MODULE_NAME, 'playersPlaybackLimited')) {
+  if (getGame().user?.isGM || data.owner || getGame().settings.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'playersPlaybackLimited')) {
     buttons += `<button id="voiceactor-playback" class="voiceactor-button" title="${getGame().i18n.localize(
       'VOICEACTOR.ui.button-tooltip-playback',
     )}">
@@ -341,7 +362,10 @@ export const onRender = async (app, html, data) => {
   // Add buttons
   title.prepend(buttons);
 
-  const clip = await VoiceActor.getClip(data, customDirectory, isJournal);
+  // const clip = await VoiceActor.getClip(data, customDirectory, isJournal);
+  const obj = await VoiceActor.getClip(data, customDirectory, isJournal);
+  const clip = obj.file;
+  const fileName = obj.name;
 
   if (clip) {
     // Change button color if this actor has a clip already
@@ -355,7 +379,9 @@ export const onRender = async (app, html, data) => {
       return;
     }
 
-    const clip = await VoiceActor.getClip(data, customDirectory, isJournal);
+    // const obj = await VoiceActor.getClip(data, customDirectory, isJournal);
+    // const clip = obj.file;
+    // const fileName = obj.name;
 
     if (clip) {
       if (!ev.shiftKey) {
@@ -369,7 +395,7 @@ export const onRender = async (app, html, data) => {
       }
     }
 
-    const fileName = VoiceActor.getClipActorFileName(data, isJournal);
+    // const fileName = VoiceActor.getClipActorFileName(data, isJournal);
 
     if (!navigator.mediaDevices) {
       ui.notifications?.error(getGame().i18n.localize('VOICEACTOR.notif.no-media-devices'));
@@ -438,7 +464,10 @@ export const onRender = async (app, html, data) => {
       return;
     }
 
-    const clip = await VoiceActor.getClip(data, customDirectory, isJournal);
+    // const obj = await VoiceActor.getClip(data, customDirectory, isJournal);
+    // const clip = obj.file;
+    // const fileName = obj.name;
+
     //@ts-ignore
     const hasHowler = typeof Howl != 'undefined';
     if (clip) {

@@ -12,20 +12,20 @@
 // Import JavaScript modules
 // Import TypeScript modules
 
-import { getGame, registerSettings, VOICE_ACTOR_MODULE_NAME } from './settings';
+import { getGame, registerSettings, VOICE_ACTOR_CHATTER_MODULE_NAME } from './settings';
 import { initHooks, readyHooks, setupHooks } from './Hooks';
 
 export let debugEnabled = 0;
 // 0 = none, warnings = 1, debug = 2, all = 3
 export const debug = (...args) => {
-  if (debugEnabled > 1) console.log(`DEBUG:${VOICE_ACTOR_MODULE_NAME} | `, ...args);
+  if (debugEnabled > 1) console.log(`DEBUG:${VOICE_ACTOR_CHATTER_MODULE_NAME} | `, ...args);
 };
-export const log = (...args) => console.log(`${VOICE_ACTOR_MODULE_NAME} | `, ...args);
+export const log = (...args) => console.log(`${VOICE_ACTOR_CHATTER_MODULE_NAME} | `, ...args);
 export const warn = (...args) => {
-  if (debugEnabled > 0) console.warn(`${VOICE_ACTOR_MODULE_NAME} | `, ...args);
+  if (debugEnabled > 0) console.warn(`${VOICE_ACTOR_CHATTER_MODULE_NAME} | `, ...args);
 };
-export const error = (...args) => console.error(`${VOICE_ACTOR_MODULE_NAME} | `, ...args);
-export const timelog = (...args) => warn(`${VOICE_ACTOR_MODULE_NAME} | `, Date.now(), ...args);
+export const error = (...args) => console.error(`${VOICE_ACTOR_CHATTER_MODULE_NAME} | `, ...args);
+export const timelog = (...args) => warn(`${VOICE_ACTOR_CHATTER_MODULE_NAME} | `, Date.now(), ...args);
 export const i18n = (key) => {
   return getGame().i18n.localize(key);
 };
@@ -41,7 +41,7 @@ export const setDebugLevel = (debugText) => {
 /* Initialize module					*/
 /* ------------------------------------ */
 Hooks.once('init', async () => {
-  log(`${VOICE_ACTOR_MODULE_NAME} | Initializing ${VOICE_ACTOR_MODULE_NAME}`);
+  log(`${VOICE_ACTOR_CHATTER_MODULE_NAME} | Initializing ${VOICE_ACTOR_CHATTER_MODULE_NAME}`);
   // Register custom module settings
   registerSettings();
   // Assign custom classes and constants here

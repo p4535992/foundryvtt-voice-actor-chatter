@@ -63,11 +63,7 @@ export class VoiceActorChatter {
     // const emote = Object.keys(options).length ? {emote: options} : false;
     //await getCanvas().hud.bubbles.say(token.data, result, emote);
 
-    const tokenTmp = <Token>getCanvas().tokens?.placeables.find((token: Token) => token.data._id === token.id);
-
-    // Play Sounds
-    // const fileClipPlayPath = await VoiceActor.getClipFromRollTableRow(tokenTmp, result, false);
-    // Play file
+    // Play Sounds File
     VoiceActor.playClip(result, true);
   }
 
@@ -94,9 +90,7 @@ export class VoiceActorChatter {
     // const emote = Object.keys(options).length ? {emote: options} : false;
     // await getCanvas().hud.bubbles.say(token.data, result, emote);
 
-    // Play Sounds
-    // const fileClipPlayPath = await VoiceActor.getClipFromRollTableRow(token, '', result, false);
-    // Play file
+    // Play Sounds File
     VoiceActor.playClip(result, true);
   }
 
@@ -134,9 +128,7 @@ export class VoiceActorChatter {
     // const emote = Object.keys(options).length ? {emote: options} : false;
     // await getCanvas().hud.bubbles.say(token, result, emote);
 
-    // Play Sounds
-    // const fileClipPlayPath = await VoiceActor.getClipFromRollTableRow(token, '', result, false);
-    // Play file
+    // Play Sounds File
     VoiceActor.playClip(result, true);
   }
 

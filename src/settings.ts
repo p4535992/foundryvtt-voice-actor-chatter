@@ -1,6 +1,7 @@
 import SoundPicker from './libs/SoundPicker';
+import { i18n } from './main';
 
-export const VOICE_ACTOR_MODULE_NAME = 'foundryvtt-voice-actor';
+export const VOICE_ACTOR_CHATTER_MODULE_NAME = 'foundryvtt-voice-actor-chatter';
 
 /**
  * Because typescript doesn't know when in the lifecycle of foundry your code runs, we have to assume that the
@@ -35,7 +36,7 @@ export function getGame(): Game {
 }
 
 export const registerSettings = function () {
-  getGame().settings.register(VOICE_ACTOR_MODULE_NAME, 'playersRecordOwned', {
+  getGame().settings.register(VOICE_ACTOR_CHATTER_MODULE_NAME, 'playersRecordOwned', {
     name: 'VOICEACTOR.settings.players-record-owned.name',
     hint: 'VOICEACTOR.settings.players-record-owned.hint',
     scope: 'world',
@@ -44,7 +45,7 @@ export const registerSettings = function () {
     type: Boolean,
   });
 
-  getGame().settings.register(VOICE_ACTOR_MODULE_NAME, 'playersPlaybackLimited', {
+  getGame().settings.register(VOICE_ACTOR_CHATTER_MODULE_NAME, 'playersPlaybackLimited', {
     name: 'VOICEACTOR.settings.players-playback-limited.name',
     hint: 'VOICEACTOR.settings.players-playback-limited.hint',
     scope: 'world',
@@ -53,12 +54,12 @@ export const registerSettings = function () {
     type: Boolean,
   });
 
-  getGame().settings.register(VOICE_ACTOR_MODULE_NAME, 'customDirectory', {
-    name: getGame().i18n.localize('VOICEACTOR.settings.customDirectory.name'),
-    hint: getGame().i18n.localize('VOICEACTOR.settings.customDirectory.hint'),
+  getGame().settings.register(VOICE_ACTOR_CHATTER_MODULE_NAME, 'customDirectory', {
+    name: i18n('VOICEACTOR.settings.customDirectory.name'),
+    hint: i18n('VOICEACTOR.settings.customDirectory.hint'),
     scope: 'world',
     config: true,
-    default: `/worlds/${getGame().world.id}/${VOICE_ACTOR_MODULE_NAME}`,
+    default: `/worlds/${getGame().world.id}/${VOICE_ACTOR_CHATTER_MODULE_NAME}`,
     type: String,
     //@ts-ignore
     filePicker: 'audio',
