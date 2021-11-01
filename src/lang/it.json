@@ -28,6 +28,10 @@
       "disableHeaderSheetButtons": {
         "name": "Nascondi i bottoni di registra e playback sull'header degli acotr e journal sheet",
         "hint": "Nascondi i bottoni di registra e playback sull'header degli acotr e journal sheet"
+      },
+      "uploadFileUtil": {
+        "name": "Upload file util",
+        "hint": "Un settaggio per uploadare file audio sul server"
       }
     }
   }

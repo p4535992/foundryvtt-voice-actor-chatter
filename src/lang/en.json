@@ -28,6 +28,10 @@
       "disableHeaderSheetButtons": {
         "name": "Disable header Sheet Buttons",
         "hint": "Disable header Sheet Buttons after you are ok with the chatter audio file"
+      },
+      "uploadFileUtil": {
+        "name": "Upload file util",
+        "hint": "A setting for upload file audio on the server"
       }
     }
   }

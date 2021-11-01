@@ -36,8 +36,8 @@ export function getGame(): Game {
 
 export const registerSettings = function () {
   getGame().settings.register(VOICE_ACTOR_CHATTER_MODULE_NAME, 'playersRecordOwned', {
-    name: 'foundryvtt-voice-actor-chatter.settings.players-record-owned.name',
-    hint: 'foundryvtt-voice-actor-chatter.settings.players-record-owned.hint',
+    name: i18n('foundryvtt-voice-actor-chatter.settings.players-record-owned.name'),
+    hint: i18n('foundryvtt-voice-actor-chatter.settings.players-record-owned.hint'),
     scope: 'world',
     config: true,
     default: false,
@@ -45,8 +45,8 @@ export const registerSettings = function () {
   });
 
   getGame().settings.register(VOICE_ACTOR_CHATTER_MODULE_NAME, 'playersPlaybackLimited', {
-    name: 'foundryvtt-voice-actor-chatter.settings.players-playback-limited.name',
-    hint: 'foundryvtt-voice-actor-chatter.settings.players-playback-limited.hint',
+    name: i18n('foundryvtt-voice-actor-chatter.settings.players-playback-limited.name'),
+    hint: i18n('foundryvtt-voice-actor-chatter.settings.players-playback-limited.hint'),
     scope: 'world',
     config: true,
     default: false,
@@ -67,11 +67,25 @@ export const registerSettings = function () {
   });
 
   getGame().settings.register(VOICE_ACTOR_CHATTER_MODULE_NAME, 'disableHeaderSheetButtons', {
-    name: 'foundryvtt-voice-actor-chatter.settings.disableHeaderSheetButtons.name',
-    hint: 'foundryvtt-voice-actor-chatter.settings.disableHeaderSheetButtons.hint',
+    name: i18n('foundryvtt-voice-actor-chatter.settings.disableHeaderSheetButtons.name'),
+    hint: i18n('foundryvtt-voice-actor-chatter.settings.disableHeaderSheetButtons.hint'),
     scope: 'world',
     config: true,
     default: false,
     type: Boolean,
   });
+
+  getGame().settings.register(VOICE_ACTOR_CHATTER_MODULE_NAME, 'uploadFileUtil', {
+    name: i18n('foundryvtt-voice-actor-chatter.settings.uploadFileUtil.name'),
+    hint: i18n('foundryvtt-voice-actor-chatter.settings.uploadFileUtil.hint'),
+    scope: 'client',
+    config: true,
+    default: ``,
+    type: String,
+    //@ts-ignore
+    filePicker: 'audio',
+    //@ts-ignore
+    // type: SoundPicker.Sound, //audioTypeFunc,
+  });
+
 };

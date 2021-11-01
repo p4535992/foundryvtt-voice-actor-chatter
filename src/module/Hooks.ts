@@ -12,27 +12,30 @@ export const readyHooks = async () => {
   if (getGame().user?.isGM) {
     // Will be used when custom dirs are supported
     const customDirectory = getGame().settings.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'customDirectory') ?? '';
-    // Ensure the VA dir exists
-    try {
-      await FilePicker.createDirectory(
-        //@ts-ignore
-        VoiceActor.isForge() ? 'forgevtt' : 'data',
-        `${customDirectory}`,
-      );
-    } catch (e) {
-      if (!String(e.message).startsWith('EEXIST')) {
-        log(e);
+    if(customDirectory){
+    
+      // Ensure the VA dir exists
+      try {
+        await FilePicker.createDirectory(
+          //@ts-ignore
+          VoiceActor.isForge() ? 'forgevtt' : 'data',
+          `${customDirectory}`,
+        );
+      } catch (e) {
+        if (!String(e.message).startsWith('EEXIST')) {
+          log(e);
+        }
       }
-    }
-    try {
-      await FilePicker.createDirectory(
-        //@ts-ignore
-        VoiceActor.isForge() ? 'forgevtt' : 'data',
-        `${customDirectory}/Journal`,
-      );
-    } catch (e) {
-      if (!String(e.message).startsWith('EEXIST')) {
-        log(e);
+      try {
+        await FilePicker.createDirectory(
+          //@ts-ignore
+          VoiceActor.isForge() ? 'forgevtt' : 'data',
+          `${customDirectory}/Journal`,
+        );
+      } catch (e) {
+        if (!String(e.message).startsWith('EEXIST')) {
+          log(e);
+        }
       }
     }
   }

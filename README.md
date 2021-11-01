@@ -6,6 +6,13 @@ This module arises from the need together with the [Trigger Happy module](https:
 
 This work even with external audio just set the source on the roll table.
 
+Here some macro for give the idea
+
+```
+var token = canvas.tokens.placeables.filter(x => x.data.name == "MerchantWeapon01")[0];
+game.voiceActorChatter.tokenChatter(token);
+```
+
 ## Installation
 
 It's always easiest to install modules from the in game add-on browser.
@@ -84,7 +91,7 @@ e.g. If you change one unlinked Goblin's name to "Boblin" in his actor sheet, he
 ## How do I use it?
 
 - Install & enable the module
-- Make sure to create a folder 'Voice Actor' on the rolltable sidebar
+- Make sure to create a folder **'Voice Actor'** on the rolltable sidebar
 - Double click a token to open their actor sheet (or open a journal entry)
 - Note the 2 new buttons at the top left of the window
 - Click the microphone button to record (up to 10 seconds)

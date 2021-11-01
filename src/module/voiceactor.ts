@@ -4,7 +4,7 @@
 
 import { TokenData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
 import { BaseTableResult } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/documents.mjs';
-import { warn } from '../main';
+import { i18n, warn } from '../main';
 import { getGame, VOICE_ACTOR_CHATTER_MODULE_NAME } from './settings';
 import { VoiceActorChatter } from './voiceactorchatter';
 
@@ -20,84 +20,92 @@ export class VoiceActor {
       customDirectory = <string>getGame().settings.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'customDirectory') ?? '';
     }
 
-    const nameActorFolder = VoiceActor.getClipActorFolderName(data);
+    if(customDirectory){
 
-    // Create directories
-    try {
-      await FilePicker.createDirectory(
-        //@ts-ignore
-        VoiceActor.isForge() ? 'forgevtt' : 'data',
-        `${customDirectory}`,
-        {},
-      );
-    } catch (e) {
-      // DO NOTHING
-    }
-    try {
-      await FilePicker.createDirectory(
-        //@ts-ignore
-        VoiceActor.isForge() ? 'forgevtt' : 'data',
-        `${customDirectory}/`,
-        {},
-      );
-    } catch (e) {
-      // DO NOTHING
-    }
-    try {
-      await FilePicker.createDirectory(
-        //@ts-ignore
-        VoiceActor.isForge() ? 'forgevtt' : 'data',
-        `${customDirectory}/Journal`,
-        {},
-      );
-    } catch (e) {
-      // DO NOTHING
-    }
-    try {
-      await FilePicker.createDirectory(
-        //@ts-ignore
-        VoiceActor.isForge() ? 'forgevtt' : 'data',
-        `${customDirectory}/${nameActorFolder}`,
-        {},
-      );
-    } catch (e) {
-      // DO NOTHING
-    }
+      const nameActorFolder = VoiceActor.getClipActorFolderName(data);
 
-    try {
-      await FilePicker.createDirectory(
+      // Create directories
+      try {
+        await FilePicker.createDirectory(
+          //@ts-ignore
+          VoiceActor.isForge() ? 'forgevtt' : 'data',
+          `${customDirectory}`,
+          {},
+        );
+      } catch (e) {
+        // DO NOTHING
+      }
+      try {
+        await FilePicker.createDirectory(
+          //@ts-ignore
+          VoiceActor.isForge() ? 'forgevtt' : 'data',
+          `${customDirectory}/`,
+          {},
+        );
+      } catch (e) {
+        // DO NOTHING
+      }
+      try {
+        await FilePicker.createDirectory(
+          //@ts-ignore
+          VoiceActor.isForge() ? 'forgevtt' : 'data',
+          `${customDirectory}/Journal`,
+          {},
+        );
+      } catch (e) {
+        // DO NOTHING
+      }
+      try {
+        await FilePicker.createDirectory(
+          //@ts-ignore
+          VoiceActor.isForge() ? 'forgevtt' : 'data',
+          `${customDirectory}/${nameActorFolder}`,
+          {},
+        );
+      } catch (e) {
+        // DO NOTHING
+      }
+
+      try {
+        await FilePicker.createDirectory(
+          //@ts-ignore
+          VoiceActor.isForge() ? 'forgevtt' : 'data',
+          `${customDirectory}/Journal/${nameActorFolder}`,
+          {},
+        );
+      } catch (e) {
+        // DO NOTHING
+      }
+
+      // Get files
+      const vaDir = await FilePicker.browse(
         //@ts-ignore
         VoiceActor.isForge() ? 'forgevtt' : 'data',
-        `${customDirectory}/Journal/${nameActorFolder}`,
-        {},
+        `${customDirectory}${isJournal ? '/Journal' : ''}/${nameActorFolder}`,
       );
-    } catch (e) {
-      // DO NOTHING
+      // Check if file exists already
+      // const fileName = VoiceActor.getClipActorFileName(data, isJournal);
+      const fileName = `${data.actor?._id}-${data.actor?.name
+        ?.replace(/[^a-z0-9]/gi, '_')
+        .toLowerCase()}-${VoiceActor.generateUUID()}.wav`;
+      // const clip = <string>VoiceActor.getFile(vaDir.files, fileName);
+      // let clip = <string>vaDir.files.find((el) => el.includes(fileName));
+      // if (!clip) {
+      //   clip = vaDir.files[0];
+      //   fileName = clip.substring(clip.lastIndexOf('/') + 1);
+      // }
+      const clip = vaDir.target + '/' + fileName;
+
+      return {
+        file: clip,
+        name: fileName,
+      };
+    }else{
+      return {
+        file: '',
+        name: '',
+      };
     }
-
-    // Get files
-    const vaDir = await FilePicker.browse(
-      //@ts-ignore
-      VoiceActor.isForge() ? 'forgevtt' : 'data',
-      `${customDirectory}${isJournal ? '/Journal' : ''}/${nameActorFolder}`,
-    );
-    // Check if file exists already
-    // const fileName = VoiceActor.getClipActorFileName(data, isJournal);
-    const fileName = `${data.actor?._id}-${data.actor?.name
-      ?.replace(/[^a-z0-9]/gi, '_')
-      .toLowerCase()}-${VoiceActor.generateUUID()}.wav`;
-    // const clip = <string>VoiceActor.getFile(vaDir.files, fileName);
-    // let clip = <string>vaDir.files.find((el) => el.includes(fileName));
-    // if (!clip) {
-    //   clip = vaDir.files[0];
-    //   fileName = clip.substring(clip.lastIndexOf('/') + 1);
-    // }
-    const clip = vaDir.target + '/' + fileName;
-
-    return {
-      file: clip,
-      name: fileName,
-    };
   };
 
   static getClipActorFolderName = function (data: Token) {
@@ -217,10 +225,10 @@ export class VoiceActor {
       // title.find("#voiceactor-playback #voiceactor-playback-icon").removeClass('fa-play').addClass('fa-stop');
       if (toAllWithSocket) {
         getGame().socket?.emit('playAudio', payload);
-        ui.notifications?.notify(getGame().i18n.localize('foundryvtt-voice-actor-chatter.notif.broadcasted'));
+        // ui.notifications?.notify(i18n('foundryvtt-voice-actor-chatter.notif.broadcasted'));
       }
     } else {
-      ui.notifications?.notify(getGame().i18n.localize('foundryvtt-voice-actor-chatter.notif.no-clip-for-actor'));
+      ui.notifications?.notify(i18n('foundryvtt-voice-actor-chatter.notif.no-clip-for-actor'));
     }
   };
 
@@ -390,7 +398,7 @@ export const onRender = async (app, html, data) => {
       getGame().settings?.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'playersRecordOwned') &&
       getGame().user?.hasPermission('FILES_UPLOAD'))
   ) {
-    buttons += `<button id="voiceactor-record" class="voiceactor-button" title="${getGame().i18n.localize(
+    buttons += `<button id="voiceactor-record" class="voiceactor-button" title="${i18n(
       'foundryvtt-voice-actor-chatter.ui.button-tooltip-record',
     )}">
         <i id="voiceactor-record-icon" style="color: white" class="fas fa-microphone"></i>
@@ -402,7 +410,7 @@ export const onRender = async (app, html, data) => {
     data.owner ||
     getGame().settings.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'playersPlaybackLimited')
   ) {
-    buttons += `<button id="voiceactor-playback" class="voiceactor-button" title="${getGame().i18n.localize(
+    buttons += `<button id="voiceactor-playback" class="voiceactor-button" title="${i18n(
       'foundryvtt-voice-actor-chatter.ui.button-tooltip-playback',
     )}">
         <i id="voiceactor-playback-icon" style="color: white" class="fas fa-play"></i>
@@ -412,8 +420,11 @@ export const onRender = async (app, html, data) => {
   // Add buttons
   title.prepend(buttons);
 
-  // const clip = await VoiceActor.getClip(data, customDirectory, isJournal);
   const obj = await VoiceActor.getClip(data, customDirectory, isJournal);
+  if(obj.file == '' || obj.name == ''){
+    ui.notifications?.notify(i18n('foundryvtt-voice-actor-chatter.notif.no-clip-for-actor'));
+    return;
+  }
   const clip = obj.file;
   const fileName = obj.name;
 
@@ -429,18 +440,14 @@ export const onRender = async (app, html, data) => {
       return;
     }
 
-    // const obj = await VoiceActor.getClip(data, customDirectory, isJournal);
-    // const clip = obj.file;
-    // const fileName = obj.name;
-
     if (clip) {
       if (!ev.shiftKey) {
         // Notify user if record is clicked but clip exists. Bypass if SHIFT is held when clicking.
-        ui.notifications?.notify(getGame().i18n.localize('foundryvtt-voice-actor-chatter.notif.clip-exists'));
+        ui.notifications?.notify(i18n('foundryvtt-voice-actor-chatter.notif.clip-exists'));
         return;
       } else {
         if (VoiceActor.isForge()) {
-          ui.notifications?.notify(getGame().i18n.localize('foundryvtt-voice-actor-chatter.notif.forge-cache'));
+          ui.notifications?.notify(i18n('foundryvtt-voice-actor-chatter.notif.forge-cache'));
         }
       }
     }
@@ -448,7 +455,7 @@ export const onRender = async (app, html, data) => {
     // const fileName = VoiceActor.getClipActorFileName(data, isJournal);
 
     if (!navigator.mediaDevices) {
-      ui.notifications?.error(getGame().i18n.localize('foundryvtt-voice-actor-chatter.notif.no-media-devices'));
+      ui.notifications?.error(i18n('foundryvtt-voice-actor-chatter.notif.no-media-devices'));
     }
     // Record clip
     navigator.mediaDevices
@@ -514,10 +521,6 @@ export const onRender = async (app, html, data) => {
       return;
     }
 
-    // const obj = await VoiceActor.getClip(data, customDirectory, isJournal);
-    // const clip = obj.file;
-    // const fileName = obj.name;
-
     //@ts-ignore
     const hasHowler = typeof Howl != 'undefined';
     if (clip) {
@@ -556,10 +559,10 @@ export const onRender = async (app, html, data) => {
       title.find('#voiceactor-playback #voiceactor-playback-icon').removeClass('fa-play').addClass('fa-stop');
       if (ev.shiftKey) {
         getGame().socket?.emit('playAudio', payload);
-        ui.notifications?.notify(getGame().i18n.localize('foundryvtt-voice-actor-chatter.notif.broadcasted'));
+        ui.notifications?.notify(i18n('foundryvtt-voice-actor-chatter.notif.broadcasted'));
       }
     } else {
-      ui.notifications?.notify(getGame().i18n.localize('foundryvtt-voice-actor-chatter.notif.no-clip-for-actor'));
+      ui.notifications?.notify(i18n('foundryvtt-voice-actor-chatter.notif.no-clip-for-actor'));
     }
   });
 };
