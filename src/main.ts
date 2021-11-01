@@ -12,8 +12,8 @@
 // Import JavaScript modules
 // Import TypeScript modules
 
-import { getGame, registerSettings, VOICE_ACTOR_CHATTER_MODULE_NAME } from './settings';
-import { initHooks, readyHooks, setupHooks } from './Hooks';
+import { getGame, registerSettings, VOICE_ACTOR_CHATTER_MODULE_NAME } from './module/settings';
+import { initHooks, readyHooks, setupHooks } from './module/Hooks';
 
 export let debugEnabled = 0;
 // 0 = none, warnings = 1, debug = 2, all = 3

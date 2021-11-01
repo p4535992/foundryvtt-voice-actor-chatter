@@ -1,0 +1,34 @@
+{
+  "foundryvtt-voice-actor-chatter": {
+    "notif": {
+      "no-clip-for-actor": "Nessun file audio (clip) registrato per questo attore",
+      "clip-exists": "File audio (Clip) gia' registrato/esiste per questo attore. Shift + click sinistro permette di agguingere un'ulteriore voce.",
+      "broadcasted": "Diffondi file audio a tutti i giocatori",
+      "forge-cache": "L'aggiornamento dei file audio (clips) puo' richiedere fino a tre minuti su forge per l'aggiornamento. Se non senti il file audio ritente più tardi in un secondo momento",
+      "no-media-devices": "Microphone permissions error. Please check the readme on GitHub for a solution.",
+      "no-rolltable-for-actor": "Nessuna roll table trovata per il nome '${actorRollTableName}' assicurati che esista una rolltable con il nome '${actorRollTableName} voice' sotto la cartella 'Voice Actor'."
+    },
+    "ui": {
+      "button-tooltip-record": "Click to record. Shift-click to overwrite.",
+      "button-tooltip-playback": "Click to playback to GM. Shift-click to playback to all players."
+    },
+    "settings": {
+      "players-record-owned": {
+        "name": "Permetti al proprietario di registrare",
+        "hint": "Enable to let players record and playback on their owned actors. Requires FILES_UPLOAD permission for players."
+      },
+      "players-playback-limited": {
+        "name": "Permetti a Proprietari enon di sentire la voce del playback",
+        "hint": "Permetrri ai giocatori di sentire i file audio  playback clips sugli attori di cui non sono proprietari. I giocatori non possono registrare su questi attori."
+      },
+      "customDirectory": {
+        "name": "Custom directory path",
+        "hint": "Custom directory path"
+      },
+      "disableHeaderSheetButtons": {
+        "name": "Nascondi i bottoni di registra e playback sull'header degli acotr e journal sheet",
+        "hint": "Nascondi i bottoni di registra e playback sull'header degli acotr e journal sheet"
+      }
+    }
+  }
+}

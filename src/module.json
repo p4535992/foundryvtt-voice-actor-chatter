@@ -36,6 +36,11 @@
       "lang": "en",
       "name": "English",
       "path": "lang/en.json"
+    },
+    {
+      "lang": "it",
+      "name": "Italian",
+      "path": "lang/it.json"
     }
   ],
   "scripts": [],

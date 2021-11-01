@@ -1,5 +1,4 @@
-import SoundPicker from './libs/SoundPicker';
-import { i18n } from './main';
+import { i18n } from '../main';
 
 export const VOICE_ACTOR_CHATTER_MODULE_NAME = 'foundryvtt-voice-actor-chatter';
 

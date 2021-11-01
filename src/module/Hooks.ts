@@ -1,4 +1,4 @@
-import { log, warn } from './main';
+import { log, warn } from '../main';
 import { getCanvas, getGame, VOICE_ACTOR_CHATTER_MODULE_NAME } from './settings';
 import { onRender, VoiceActor } from './voiceactor';
 import { VoiceActorChatter } from './voiceactorchatter';

@@ -4,7 +4,7 @@
 
 import { TokenData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
 import { BaseTableResult } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/documents.mjs';
-import { warn } from './main';
+import { warn } from '../main';
 import { getGame, VOICE_ACTOR_CHATTER_MODULE_NAME } from './settings';
 import { VoiceActorChatter } from './voiceactorchatter';
 
