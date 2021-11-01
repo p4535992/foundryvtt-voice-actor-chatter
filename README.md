@@ -284,14 +284,14 @@ Any issues, bugs, or feature requests are always welcome to be reported directly
 
 ## License
 
-- [Voice Actor Chatter](https://github.com/cswendrowski/FoundryVtt-Npc-Chatter) - [GPL 3.0](https://github.com/cswendrowski/FoundryVtt-Npc-Chatter/blob/master/LICENSE.md)
+- [NPC Chatter](https://github.com/cswendrowski/FoundryVtt-Npc-Chatter) - [GPL 3.0](https://github.com/cswendrowski/FoundryVtt-Npc-Chatter/blob/master/LICENSE.md)
 - [Voice Actor for FVTT by Blitz](https://github.com/BlitzKraig/fvtt-VoiceActor) - [MIT](https://github.com/BlitzKraig/fvtt-VoiceActor/blob/master/LICENSE)
 
 This package is under an [GPL 3.0 license](LICENSE) and the [Foundry Virtual Tabletop Limited License Agreement for module development](https://foundryvtt.com/article/license/).
 
 # Credit
 
-- [Voice Actor Chatter](https://github.com/cswendrowski/FoundryVtt-Npc-Chatter)
+- [NPC Chatter](https://github.com/cswendrowski/FoundryVtt-Npc-Chatter)
 - [Voice Actor for FVTT by Blitz](https://github.com/BlitzKraig/fvtt-VoiceActor)
 
 ## Acknowledgements
