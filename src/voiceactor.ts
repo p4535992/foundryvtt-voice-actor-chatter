@@ -11,7 +11,11 @@ import { VoiceActorChatter } from './voiceactorchatter';
 export class VoiceActor {
   static moduleName = VOICE_ACTOR_CHATTER_MODULE_NAME;
 
-  static getClip = async (data: Token, customDirectory: string, isJournal: boolean):Promise<{file:string, name:string}> => {
+  static getClip = async (
+    data: Token,
+    customDirectory: string,
+    isJournal: boolean,
+  ): Promise<{ file: string; name: string }> => {
     if (!customDirectory) {
       customDirectory = <string>getGame().settings.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'customDirectory') ?? '';
     }
@@ -33,7 +37,7 @@ export class VoiceActor {
       await FilePicker.createDirectory(
         //@ts-ignore
         VoiceActor.isForge() ? 'forgevtt' : 'data',
-        `${customDirectory}/VoiceActor${isJournal ? '/Journal' : ''}`,
+        `${customDirectory}/`,
         {},
       );
     } catch (e) {
@@ -43,7 +47,28 @@ export class VoiceActor {
       await FilePicker.createDirectory(
         //@ts-ignore
         VoiceActor.isForge() ? 'forgevtt' : 'data',
-        `${customDirectory}/VoiceActor${isJournal ? '/Journal' : ''}/${nameActorFolder}`,
+        `${customDirectory}/Journal`,
+        {},
+      );
+    } catch (e) {
+      // DO NOTHING
+    }
+    try {
+      await FilePicker.createDirectory(
+        //@ts-ignore
+        VoiceActor.isForge() ? 'forgevtt' : 'data',
+        `${customDirectory}/${nameActorFolder}`,
+        {},
+      );
+    } catch (e) {
+      // DO NOTHING
+    }
+
+    try {
+      await FilePicker.createDirectory(
+        //@ts-ignore
+        VoiceActor.isForge() ? 'forgevtt' : 'data',
+        `${customDirectory}/Journal/${nameActorFolder}`,
         {},
       );
     } catch (e) {
@@ -54,16 +79,26 @@ export class VoiceActor {
     const vaDir = await FilePicker.browse(
       //@ts-ignore
       VoiceActor.isForge() ? 'forgevtt' : 'data',
-      `${customDirectory}/VoiceActor${isJournal ? '/Journal' : ''}/${nameActorFolder}`,
+      `${customDirectory}${isJournal ? '/Journal' : ''}/${nameActorFolder}`,
     );
     // Check if file exists already
     // const fileName = VoiceActor.getClipActorFileName(data, isJournal);
-    const fileName = `${data.actor?._id}-${data.actor?.name?.replace(/[^a-z0-9]/gi, '_').toLowerCase()}-${VoiceActor.generateUUID()}.wav`;
-    const clip = <string>VoiceActor.getFile(vaDir.files, fileName);
+    const fileName = `${data.actor?._id}-${data.actor?.name
+      ?.replace(/[^a-z0-9]/gi, '_')
+      .toLowerCase()}-${VoiceActor.generateUUID()}.wav`;
+    // const clip = <string>VoiceActor.getFile(vaDir.files, fileName);
+    // let clip = <string>vaDir.files.find((el) => el.includes(fileName));
+    // if (!clip) {
+    //   clip = vaDir.files[0];
+    //   fileName = clip.substring(clip.lastIndexOf('/') + 1);
+    // }
+    const clip = vaDir.target + '/' + fileName;
+
+
     return {
-      file : clip,
-      name: fileName
-    }
+      file: clip,
+      name: fileName,
+    };
   };
 
   static getClipActorFolderName = function (data: Token) {
@@ -87,26 +122,29 @@ export class VoiceActor {
   //   return fileName;
   // };
 
-  static generateUUID = function() { // Public Domain/MIT
-    let d = new Date().getTime();//Timestamp
-    let d2 = ((typeof performance !== 'undefined') && performance.now && (performance.now()*1000)) || 0;//Time in microseconds since page-load or 0 if unsupported
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        let r = Math.random() * 16;//random number between 0 and 16
-        if(d > 0){//Use timestamp until depleted
-            r = (d + r)%16 | 0;
-            d = Math.floor(d/16);
-        } else {//Use microseconds since page-load if supported
-            r = (d2 + r)%16 | 0;
-            d2 = Math.floor(d2/16);
-        }
-        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+  static generateUUID = function () {
+    // Public Domain/MIT
+    let d = new Date().getTime(); //Timestamp
+    let d2 = (typeof performance !== 'undefined' && performance.now && performance.now() * 1000) || 0; //Time in microseconds since page-load or 0 if unsupported
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      let r = Math.random() * 16; //random number between 0 and 16
+      if (d > 0) {
+        //Use timestamp until depleted
+        r = (d + r) % 16 | 0;
+        d = Math.floor(d / 16);
+      } else {
+        //Use microseconds since page-load if supported
+        r = (d2 + r) % 16 | 0;
+        d2 = Math.floor(d2 / 16);
+      }
+      return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
     });
-  }
-
-  static getFile = (filesArray: string[], filename: string) => {
-    const file = filesArray.find((el) => el.includes(filename));
-    return file || '';
   };
+
+  // static getFile = (filesArray: string[], filename: string) => {
+  //   const file = filesArray.find((el) => el.includes(filename));
+  //   return file || '';
+  // };
 
   static isForge = () => {
     //@ts-ignore
@@ -196,6 +234,9 @@ export class VoiceActor {
       (table: RollTable) => table.name?.toLowerCase() == actorRollTableName.toLowerCase(),
     );
     if (!myTable) {
+      const formula = '1d20';
+      const min = 1;
+      const max = 20;
       // ui.notifications.notify(getGame().i18n.format("VOICEACTOR.notif.no-rolltable-for-actor", actorRollTableName));
       myTable = <RollTable>await RollTable.create({
         name: actorRollTableName,
@@ -203,9 +244,9 @@ export class VoiceActor {
         results: [],
         replacement: true,
         displayRoll: true,
-        img: '', //"modules/EasyTable/easytable.png"
+        img: 'icons/svg/sound.svg', //"modules/EasyTable/easytable.png"
         folder: voiceActorFolder ? voiceActorFolder : '',
-        // formula:     formula ? formula : (min == 1) ? `1d${max}` : `1d${max-min+1}+${min-1}`,
+        formula: formula ? formula : (min == 1) ? `1d${max}` : `1d${max-min+1}+${min-1}`,
         //sort: number,
         //permission: object,
         //flags: object
@@ -351,7 +392,11 @@ export const onRender = async (app, html, data) => {
         </button>`;
   }
 
-  if (getGame().user?.isGM || data.owner || getGame().settings.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'playersPlaybackLimited')) {
+  if (
+    getGame().user?.isGM ||
+    data.owner ||
+    getGame().settings.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'playersPlaybackLimited')
+  ) {
     buttons += `<button id="voiceactor-playback" class="voiceactor-button" title="${getGame().i18n.localize(
       'VOICEACTOR.ui.button-tooltip-playback',
     )}">
@@ -422,7 +467,7 @@ export const onRender = async (app, html, data) => {
             });
 
             const nameActorFolder = VoiceActor.getClipActorFolderName(data);
-            const dirName = `${customDirectory}/VoiceActor${isJournal ? '/Journal' : ''}/${nameActorFolder}`;
+            const dirName = `${customDirectory}${isJournal ? '/Journal' : ''}/${nameActorFolder}`;
             //@ts-ignore
             await FilePicker.upload(VoiceActor.isForge() ? 'forgevtt' : 'data', dirName, file);
             vaStates.recording = false;

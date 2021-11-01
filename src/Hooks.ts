@@ -17,7 +17,7 @@ export const readyHooks = async () => {
       await FilePicker.createDirectory(
         //@ts-ignore
         VoiceActor.isForge() ? 'forgevtt' : 'data',
-        `${customDirectory}/${VOICE_ACTOR_CHATTER_MODULE_NAME}}`,
+        `${customDirectory}`,
       );
     } catch (e) {
       if (!String(e.message).startsWith('EEXIST')) {
@@ -28,7 +28,7 @@ export const readyHooks = async () => {
       await FilePicker.createDirectory(
         //@ts-ignore
         VoiceActor.isForge() ? 'forgevtt' : 'data',
-        `${customDirectory}/${VOICE_ACTOR_CHATTER_MODULE_NAME}/Journal`,
+        `${customDirectory}/Journal`,
       );
     } catch (e) {
       if (!String(e.message).startsWith('EEXIST')) {

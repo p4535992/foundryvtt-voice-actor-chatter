@@ -1,6 +1,6 @@
 # Voice Actor Chatter for FVTT
 
-This module was born as a union of the features of the two [Voice Actor for FVTT by Blitz](https://github.com/BlitzKraig/fvtt-VoiceActor) and [Voice Actor Chatter](https://github.com/cswendrowski/FoundryVtt-Npc-Chatter).
+This module was born as a union of the features of the two [Voice Actor for FVTT by Blitz](https://github.com/BlitzKraig/fvtt-VoiceActor) and [NPC Chatter](https://github.com/cswendrowski/FoundryVtt-Npc-Chatter).
 
 This module arises from the need together with the [Trigger Happy module]8) to randomize a set of items for the same actor through a customizable rollTable.
 
@@ -81,21 +81,15 @@ e.g. If you change one unlinked Goblin's name to "Boblin" in his actor sheet, he
 
 ## How do I use it?
 
-Install & enable the module
-
-Double click a token to open their actor sheet (or open a journal entry)
-
-Note the 2 new buttons at the top left of the window
-
-Click the microphone button to record (up to 10 seconds)
-
-Click again to stop recording
-
-Click play to playback the recorded audio (does not broadcast, only plays for the GM)
-
-Shift-click play to broadcast to all players (note that this isn't what the module is designed for, but it was easy enough to implement, so I've jammed it in there in case you want to give your NPCs a repeatable greeting, or give your ogres a nice roar)
-
-Shift-click the microphone button to record a new clip, overwriting the previous clip for that actor
+- Install & enable the module
+- Make sure to create a folder 'Voice Actor' on the rolltable sidebar
+- Double click a token to open their actor sheet (or open a journal entry)
+- Note the 2 new buttons at the top left of the window
+- Click the microphone button to record (up to 10 seconds)
+- Click again to stop recording
+- Click play to playback the recorded audio (does not broadcast, only plays for the GM)
+- Shift-click play to broadcast to all players (note that this isn't what the module is designed for, but it was easy enough to implement, so I've jammed it in there in case you want to give your NPCs a repeatable greeting, or give your ogres a nice roar)
+- Shift-click the microphone button to record a new clip, overwriting the previous clip for that actor
 
 ## What else should I know?
 
