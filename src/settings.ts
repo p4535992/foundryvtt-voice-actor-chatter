@@ -37,8 +37,8 @@ export function getGame(): Game {
 
 export const registerSettings = function () {
   getGame().settings.register(VOICE_ACTOR_CHATTER_MODULE_NAME, 'playersRecordOwned', {
-    name: 'VOICEACTOR.settings.players-record-owned.name',
-    hint: 'VOICEACTOR.settings.players-record-owned.hint',
+    name: 'foundryvtt-voice-actor-chatter.settings.players-record-owned.name',
+    hint: 'foundryvtt-voice-actor-chatter.settings.players-record-owned.hint',
     scope: 'world',
     config: true,
     default: false,
@@ -46,8 +46,8 @@ export const registerSettings = function () {
   });
 
   getGame().settings.register(VOICE_ACTOR_CHATTER_MODULE_NAME, 'playersPlaybackLimited', {
-    name: 'VOICEACTOR.settings.players-playback-limited.name',
-    hint: 'VOICEACTOR.settings.players-playback-limited.hint',
+    name: 'foundryvtt-voice-actor-chatter.settings.players-playback-limited.name',
+    hint: 'foundryvtt-voice-actor-chatter.settings.players-playback-limited.hint',
     scope: 'world',
     config: true,
     default: false,
@@ -55,8 +55,8 @@ export const registerSettings = function () {
   });
 
   getGame().settings.register(VOICE_ACTOR_CHATTER_MODULE_NAME, 'customDirectory', {
-    name: i18n('VOICEACTOR.settings.customDirectory.name'),
-    hint: i18n('VOICEACTOR.settings.customDirectory.hint'),
+    name: i18n('foundryvtt-voice-actor-chatter.settings.customDirectory.name'),
+    hint: i18n('foundryvtt-voice-actor-chatter.settings.customDirectory.hint'),
     scope: 'world',
     config: true,
     default: `/worlds/${getGame().world.id}/${VOICE_ACTOR_CHATTER_MODULE_NAME}`,
@@ -65,5 +65,14 @@ export const registerSettings = function () {
     filePicker: 'audio',
     //@ts-ignore
     // type: SoundPicker.Sound, //audioTypeFunc,
+  });
+
+  getGame().settings.register(VOICE_ACTOR_CHATTER_MODULE_NAME, 'disableHeaderSheetButtons', {
+    name: 'foundryvtt-voice-actor-chatter.settings.disableHeaderSheetButtons.name',
+    hint: 'foundryvtt-voice-actor-chatter.settings.disableHeaderSheetButtons.hint',
+    scope: 'world',
+    config: true,
+    default: false,
+    type: Boolean,
   });
 };

@@ -94,7 +94,6 @@ export class VoiceActor {
     // }
     const clip = vaDir.target + '/' + fileName;
 
-
     return {
       file: clip,
       name: fileName,
@@ -218,10 +217,10 @@ export class VoiceActor {
       // title.find("#voiceactor-playback #voiceactor-playback-icon").removeClass('fa-play').addClass('fa-stop');
       if (toAllWithSocket) {
         getGame().socket?.emit('playAudio', payload);
-        ui.notifications?.notify(getGame().i18n.localize('VOICEACTOR.notif.broadcasted'));
+        ui.notifications?.notify(getGame().i18n.localize('foundryvtt-voice-actor-chatter.notif.broadcasted'));
       }
     } else {
-      ui.notifications?.notify(getGame().i18n.localize('VOICEACTOR.notif.no-clip-for-actor'));
+      ui.notifications?.notify(getGame().i18n.localize('foundryvtt-voice-actor-chatter.notif.no-clip-for-actor'));
     }
   };
 
@@ -237,7 +236,7 @@ export class VoiceActor {
       const formula = '1d20';
       const min = 1;
       const max = 20;
-      // ui.notifications.notify(getGame().i18n.format("VOICEACTOR.notif.no-rolltable-for-actor", actorRollTableName));
+      // ui.notifications.notify(getGame().i18n.format("foundryvtt-voice-actor-chatter.notif.no-rolltable-for-actor", actorRollTableName));
       myTable = <RollTable>await RollTable.create({
         name: actorRollTableName,
         // description: actorRollTableName, // This appears on every roll in the chat!
@@ -246,7 +245,7 @@ export class VoiceActor {
         displayRoll: true,
         img: 'icons/svg/sound.svg', //"modules/EasyTable/easytable.png"
         folder: voiceActorFolder ? voiceActorFolder : '',
-        formula: formula ? formula : (min == 1) ? `1d${max}` : `1d${max-min+1}+${min-1}`,
+        formula: formula ? formula : min == 1 ? `1d${max}` : `1d${max - min + 1}+${min - 1}`,
         //sort: number,
         //permission: object,
         //flags: object
@@ -352,6 +351,12 @@ export class VoiceActor {
 }
 
 export const onRender = async (app, html, data) => {
+  const disableHeaderSheetButtons =
+    <string>getGame().settings.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'disableHeaderSheetButtons') ?? false;
+  if (disableHeaderSheetButtons) {
+    return;
+  }
+
   const customDirectory = <string>getGame().settings.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'customDirectory') ?? '';
 
   // Get window-title from html so we can prepend our buttons
@@ -386,7 +391,7 @@ export const onRender = async (app, html, data) => {
       getGame().user?.hasPermission('FILES_UPLOAD'))
   ) {
     buttons += `<button id="voiceactor-record" class="voiceactor-button" title="${getGame().i18n.localize(
-      'VOICEACTOR.ui.button-tooltip-record',
+      'foundryvtt-voice-actor-chatter.ui.button-tooltip-record',
     )}">
         <i id="voiceactor-record-icon" style="color: white" class="fas fa-microphone"></i>
         </button>`;
@@ -398,7 +403,7 @@ export const onRender = async (app, html, data) => {
     getGame().settings.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'playersPlaybackLimited')
   ) {
     buttons += `<button id="voiceactor-playback" class="voiceactor-button" title="${getGame().i18n.localize(
-      'VOICEACTOR.ui.button-tooltip-playback',
+      'foundryvtt-voice-actor-chatter.ui.button-tooltip-playback',
     )}">
         <i id="voiceactor-playback-icon" style="color: white" class="fas fa-play"></i>
         </button>`;
@@ -431,11 +436,11 @@ export const onRender = async (app, html, data) => {
     if (clip) {
       if (!ev.shiftKey) {
         // Notify user if record is clicked but clip exists. Bypass if SHIFT is held when clicking.
-        ui.notifications?.notify(getGame().i18n.localize('VOICEACTOR.notif.clip-exists'));
+        ui.notifications?.notify(getGame().i18n.localize('foundryvtt-voice-actor-chatter.notif.clip-exists'));
         return;
       } else {
         if (VoiceActor.isForge()) {
-          ui.notifications?.notify(getGame().i18n.localize('VOICEACTOR.notif.forge-cache'));
+          ui.notifications?.notify(getGame().i18n.localize('foundryvtt-voice-actor-chatter.notif.forge-cache'));
         }
       }
     }
@@ -443,7 +448,7 @@ export const onRender = async (app, html, data) => {
     // const fileName = VoiceActor.getClipActorFileName(data, isJournal);
 
     if (!navigator.mediaDevices) {
-      ui.notifications?.error(getGame().i18n.localize('VOICEACTOR.notif.no-media-devices'));
+      ui.notifications?.error(getGame().i18n.localize('foundryvtt-voice-actor-chatter.notif.no-media-devices'));
     }
     // Record clip
     navigator.mediaDevices
@@ -551,10 +556,10 @@ export const onRender = async (app, html, data) => {
       title.find('#voiceactor-playback #voiceactor-playback-icon').removeClass('fa-play').addClass('fa-stop');
       if (ev.shiftKey) {
         getGame().socket?.emit('playAudio', payload);
-        ui.notifications?.notify(getGame().i18n.localize('VOICEACTOR.notif.broadcasted'));
+        ui.notifications?.notify(getGame().i18n.localize('foundryvtt-voice-actor-chatter.notif.broadcasted'));
       }
     } else {
-      ui.notifications?.notify(getGame().i18n.localize('VOICEACTOR.notif.no-clip-for-actor'));
+      ui.notifications?.notify(getGame().i18n.localize('foundryvtt-voice-actor-chatter.notif.no-clip-for-actor'));
     }
   });
 };

@@ -1,8 +1,10 @@
 # Voice Actor Chatter for FVTT
 
-This module was born as a union of the features of the two [Voice Actor for FVTT by Blitz](https://github.com/BlitzKraig/fvtt-VoiceActor) and [NPC Chatter](https://github.com/cswendrowski/FoundryVtt-Npc-Chatter).
+This module was born as a union of the features of the two [Voice Actor for FVTT by Blitz](https://github.com/BlitzKraig/fvtt-VoiceActor) and [NPC Chatter](https://github.com/cswendrowski/FoundryVtt-Npc-Chatter) modules.
 
-This module arises from the need together with the [Trigger Happy module]8) to randomize a set of items for the same actor through a customizable rollTable.
+This module arises from the need together with the [Trigger Happy module](https://github.com/League-of-Foundry-Developers/fvtt-module-trigger-happy) to randomize a set of voices for the same actor through a customizable rollTable. Basicaly i want when click on a actor to have a random prepared audio to run.
+
+This work even with external audio just set the source on the roll table.
 
 ## Installation
 
@@ -109,7 +111,15 @@ The easiest macro is the "Timed Global Chatter" macro - just slap it when a Scen
 
 [Trigger Happy](https://github.com/kakaroto/fvtt-module-trigger-happy) can trigger Voice Actor Chatter as well. Here's an example to get you started:
 
-When an Actor walks into a Room (defined by an invisble actor), have a specific Token chatter: `@Actor[TriggerA] @Macro[OXyjmVhEGo3eTaJz]{Specific Token Chatter}`
+When an Actor walks into a Room (defined by an invisble actor), have a specific Token chatter: 
+
+```
+@Actor[TriggerA] @Macro[OXyjmVhEGo3eTaJz]{Specific Token Chatter}
+```
+
+```
+
+```
 
 # API
 
