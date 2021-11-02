@@ -87,5 +87,4 @@ export const registerSettings = function () {
     //@ts-ignore
     // type: SoundPicker.Sound, //audioTypeFunc,
   });
-
 };

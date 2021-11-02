@@ -12,8 +12,7 @@ export const readyHooks = async () => {
   if (getGame().user?.isGM) {
     // Will be used when custom dirs are supported
     const customDirectory = getGame().settings.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'customDirectory') ?? '';
-    if(customDirectory){
-    
+    if (customDirectory) {
       // Ensure the VA dir exists
       try {
         await FilePicker.createDirectory(

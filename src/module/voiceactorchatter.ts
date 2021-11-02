@@ -8,8 +8,10 @@ export class VoiceActorChatter {
     const voiceActorFolder = <Folder>(
       getGame().folders?.contents.filter((x) => x.type == 'RollTable' && x.name?.toLowerCase() == 'voice actor')[0]
     );
-    if(!voiceActorFolder){
-      ui.notifications?.error(`The '${VOICE_ACTOR_CHATTER_MODULE_NAME}' module requires a folder with name (case insensitive) 'voice actor' on the rollTable sidebar.`);
+    if (!voiceActorFolder) {
+      ui.notifications?.error(
+        `The '${VOICE_ACTOR_CHATTER_MODULE_NAME}' module requires a folder with name (case insensitive) 'voice actor' on the rollTable sidebar.`,
+      );
       return [];
     }
     const tables = <RollTable[]>(
@@ -17,21 +19,23 @@ export class VoiceActorChatter {
         (x) => x.name?.toLowerCase().endsWith('voice') || x.data.folder == voiceActorFolder._id,
       )
     );
-    if(!tables || tables.length == 0){
-      ui.notifications?.error(`The '${VOICE_ACTOR_CHATTER_MODULE_NAME}' module requires a rollTable with name '${voiceActorFolder._id}' and ends with the 'voice' suffix.`);
+    if (!tables || tables.length == 0) {
+      ui.notifications?.error(
+        `The '${VOICE_ACTOR_CHATTER_MODULE_NAME}' module requires a rollTable with name '${voiceActorFolder._id}' and ends with the 'voice' suffix.`,
+      );
       return [];
     }
     return tables;
   };
 
-  randomGlobalChatterEvery(milliseconds, options:any = {}) {
+  randomGlobalChatterEvery(milliseconds, options: any = {}) {
     VoiceActorChatter.timer = window.setInterval(() => {
       //@ts-ignore
       getGame().voiceActorChatter?.globalChatter(options);
     }, milliseconds);
   }
 
-  async globalChatter(options:any = {}) {
+  async globalChatter(options: any = {}) {
     const tables: RollTable[] = this.getChatterTables();
 
     const userCharacterActorIds = <string[]>getGame()
@@ -76,7 +80,7 @@ export class VoiceActorChatter {
     VoiceActor.playClip(result, toAll);
   }
 
-  async tokenChatter(token: Token, options:any = {}) {
+  async tokenChatter(token: Token, options: any = {}) {
     const tables: RollTable[] = this.getChatterTables();
 
     const eligableTables = tables.filter((x) =>
@@ -104,7 +108,7 @@ export class VoiceActorChatter {
     VoiceActor.playClip(result, toAll);
   }
 
-  async selectedChatter(options:any = {}) {
+  async selectedChatter(options: any = {}) {
     const tables: RollTable[] = this.getChatterTables();
 
     const npcTokens = <Token[]>getCanvas().tokens?.controlled;

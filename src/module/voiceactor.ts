@@ -20,8 +20,7 @@ export class VoiceActor {
       customDirectory = <string>getGame().settings.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'customDirectory') ?? '';
     }
 
-    if(customDirectory){
-
+    if (customDirectory) {
       const nameActorFolder = VoiceActor.getClipActorFolderName(data);
 
       // Create directories
@@ -100,7 +99,7 @@ export class VoiceActor {
         file: clip,
         name: fileName,
       };
-    }else{
+    } else {
       return {
         file: '',
         name: '',
@@ -226,7 +225,7 @@ export class VoiceActor {
       if (toAllWithSocket) {
         getGame().socket?.emit('playAudio', payload);
         ui.notifications?.notify(i18n('foundryvtt-voice-actor-chatter.notif.broadcasted'));
-      }else{
+      } else {
         //AudioHelper.play({src: fileClipPlayPath, volume: playVolume, autoplay: true, loop: false}, true);
       }
     } else {
@@ -423,7 +422,7 @@ export const onRender = async (app, html, data) => {
   title.prepend(buttons);
 
   const obj = await VoiceActor.getClip(data, customDirectory, isJournal);
-  if(obj.file == '' || obj.name == ''){
+  if (obj.file == '' || obj.name == '') {
     ui.notifications?.notify(i18n('foundryvtt-voice-actor-chatter.notif.no-clip-for-actor'));
     return;
   }
