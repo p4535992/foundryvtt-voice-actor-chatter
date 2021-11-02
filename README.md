@@ -144,6 +144,12 @@ Macro code:
 game.voiceActorChatter.globalChatter()
 ```
 
+macro code if you want to share the sounds with all the players
+
+```js
+game.voiceActorChatter.globalChatter({toAll: true})
+```
+
 ## Global Chatter Every Interval
 
 Every interval as measured in milliseconds, executes `globalChatter()`.
@@ -156,6 +162,12 @@ Macro code:
 
 ```js
 game.voiceActorChatter.randomGlobalChatterEvery(milliseconds)
+```
+
+macro code if you want to share the sounds with all the players
+
+```js
+game.voiceActorChatter.randomGlobalChatterEvery(milliseconds, {toAll: true})
 ```
 
 ## Disable Global Chatter
@@ -187,6 +199,13 @@ var token = game.scenes.filter(x => x.active)[0].data.tokens.filter(x => x.name 
 game.voiceActorChatter.tokenChatter(token);
 ```
 
+macro code if you want to share the sounds with all the players
+
+```js
+var token = game.scenes.filter(x => x.active)[0].data.tokens.filter(x => x.name == "Human Thug C")[0];
+game.voiceActorChatter.tokenChatter(token, {toAll: true});
+```
+
 ## Selected Chatter
 
 Grabs the currently selected Tokens and tries to find matching Chatter Tables. If none, exits. If one or more, randomly picks one and an elibable Token and displays a rolled result from the Table as a ChatBubble.
@@ -199,6 +218,12 @@ Macro code:
 
 ```js
 game.voiceActorChatter.selectedChatter()
+```
+
+macro code if you want to share the sounds with all the players
+
+```js
+game.voiceActorChatter.selectedChatter(token, {toAll: true});
 ```
 
 # Build

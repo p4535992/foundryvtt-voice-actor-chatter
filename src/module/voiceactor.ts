@@ -184,7 +184,7 @@ export class VoiceActor {
 
   static playClip = async function (clip: string, toAllWithSocket: boolean) {
     // let playVolume = getGame().settings.get("core", "globalInterfaceVolume"); // TODO CUSTOMIZE WITH MODULE SETTINGS ???
-    // AudioHelper.play({src: fileClipPlayPath, volume: playVolume, autoplay: true, loop: false}, true);
+
     // Audio file to be played back
     let vaPlaybackFile;
     //@ts-ignore
@@ -225,7 +225,9 @@ export class VoiceActor {
       // title.find("#voiceactor-playback #voiceactor-playback-icon").removeClass('fa-play').addClass('fa-stop');
       if (toAllWithSocket) {
         getGame().socket?.emit('playAudio', payload);
-        // ui.notifications?.notify(i18n('foundryvtt-voice-actor-chatter.notif.broadcasted'));
+        ui.notifications?.notify(i18n('foundryvtt-voice-actor-chatter.notif.broadcasted'));
+      }else{
+        //AudioHelper.play({src: fileClipPlayPath, volume: playVolume, autoplay: true, loop: false}, true);
       }
     } else {
       ui.notifications?.notify(i18n('foundryvtt-voice-actor-chatter.notif.no-clip-for-actor'));
