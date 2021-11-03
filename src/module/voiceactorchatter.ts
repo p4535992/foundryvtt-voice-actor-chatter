@@ -1,3 +1,5 @@
+import { polyglotIsActive } from './Hooks';
+import { Polyglot } from './Polyglot';
 import { getCanvas, getGame, VOICE_ACTOR_CHATTER_MODULE_NAME } from './settings';
 import { VoiceActor } from './voiceactor';
 
@@ -16,12 +18,40 @@ export class VoiceActorChatter {
     }
     const tables = <RollTable[]>(
       getGame().tables?.contents.filter(
-        (x) => x.name?.toLowerCase().endsWith('voice') || x.data.folder == voiceActorFolder._id,
+        (x) => x.name?.toLowerCase().endsWith('voice') && x.data.folder == voiceActorFolder._id,
       )
     );
     if (!tables || tables.length == 0) {
       ui.notifications?.error(
-        `The '${VOICE_ACTOR_CHATTER_MODULE_NAME}' module requires a rollTable with name '${voiceActorFolder._id}' and ends with the 'voice' suffix.`,
+        `The '${VOICE_ACTOR_CHATTER_MODULE_NAME}' module requires a rollTable with name '${voiceActorFolder.name}' and ends with the 'voice' suffix.`,
+      );
+      return [];
+    }
+    return tables;
+  };
+
+  getChatterPolyglotTables = function (lang:string[]) {
+    const voiceActorFolder = <Folder>(
+      getGame().folders?.contents.filter((x) => x.type == 'RollTable' && x.name?.toLowerCase() == 'voice actor polyglot')[0]
+    );
+    if (!voiceActorFolder) {
+      ui.notifications?.error(
+        `The '${VOICE_ACTOR_CHATTER_MODULE_NAME}' module requires a folder with name (case insensitive) 'voice actor' on the rollTable sidebar.`,
+      );
+      return [];
+    }
+    const map:Map<string,RollTable[]> = new Map<string,RollTable[]>();
+    // languages.forEach((lang:string) =>{
+      const tables = <RollTable[]>(
+        getGame().tables?.contents.filter(
+          (x) => x.name?.toLowerCase().endsWith('voice ' + lang) && x.data.folder == voiceActorFolder._id,
+        )
+      );
+      // map.put(lang, tables);
+    // });
+    if (!tables || tables.length == 0) {
+      ui.notifications?.error(
+        `The '${VOICE_ACTOR_CHATTER_MODULE_NAME}' module requires a rollTable with name '${voiceActorFolder.name}' and ends with the 'voice' suffix.`,
       );
       return [];
     }
@@ -53,7 +83,7 @@ export class VoiceActorChatter {
     );
 
     const tableIndex = Math.floor(Math.random() * eligableTables.length + 0);
-    const table = eligableTables[tableIndex];
+    let table = eligableTables[tableIndex];
 
     const eligableTokens = npcTokens.filter((x: TokenDocument) =>
       x.name?.toLowerCase().includes(<string>table.name?.toLowerCase().replace(' voice', '').trim()),
@@ -63,6 +93,43 @@ export class VoiceActorChatter {
     const token = eligableTokens[tokenIndex];
 
     if (token == undefined) return;
+
+    // Integration with polyglot
+    if(polyglotIsActive){
+      //@ts-ignore
+      const polyglot:Polyglot = <Polyglot>window.polyglot.polyglot;
+      const currentLanguageProvider:any = polyglot.LanguageProvider;
+      // TODO get Languages from token
+      const languagesTarget:string[] = [];
+      // TODO get actors from current users usually just one
+      const actors = [];
+      // const languagesSource:Set<string> = polyglot.getUserLanguages(actors);
+      const langNotKnow:string[] = [];
+      languagesTarget.forEach((lang:string) =>{
+        if (lang){
+          const conditions = !polyglot._isTruespeech(lang) && !polyglot.known_languages.has(polyglot.comprehendLanguages) && !currentLanguageProvider.conditions(polyglot, lang);
+          if (conditions) {
+            // span.title = "????";
+            // span.textContent = polyglot.scrambleString(span.textContent, journalSheet._id, lang);
+            // span.style.font = polyglot._getFontStyle(lang);
+            langNotKnow.push(lang);
+          }
+        }
+      });
+      if(langNotKnow && langNotKnow.length > 0){
+        // I just get the first language not know from the actor
+        const lang = langNotKnow[0];
+        const eligableTablesPolyglot: RollTable[] = tables.filter((x: RollTable) =>
+          npcTokens.filter((t: TokenDocument) =>
+            x.name?.toLowerCase().includes(t.name?.toLowerCase().replace(' voice '+ lang, '').trim()),
+          ),
+        );
+
+        const tableIndexPolyglot = Math.floor(Math.random() * eligableTablesPolyglot.length + 0);
+        const tablePolyglot = eligableTablesPolyglot[tableIndexPolyglot];
+        table = tablePolyglot;
+      }
+    }
 
     const roll = await table.data.document.roll();
     const result = roll.results[0].data.text;

@@ -87,4 +87,14 @@ export const registerSettings = function () {
     //@ts-ignore
     // type: SoundPicker.Sound, //audioTypeFunc,
   });
+
+  getGame().settings.register(VOICE_ACTOR_CHATTER_MODULE_NAME, 'integrationWithPolyglot', {
+    name: i18n('foundryvtt-voice-actor-chatter.settings.integrationWithPolyglot.name'),
+    hint: i18n('foundryvtt-voice-actor-chatter.settings.integrationWithPolyglot.hint'),
+    scope: 'world',
+    config: true,
+    default: false,
+    type: Boolean,
+  });
+
 };

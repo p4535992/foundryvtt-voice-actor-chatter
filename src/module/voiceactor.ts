@@ -296,7 +296,7 @@ export class VoiceActor {
       range: range,
       drawn: false,
       text: fileNamePath,
-      img: 'icons/svg/d20-black.svg',
+      img: 'icons/svg/sound.svg',
     };
     return rollTable.data.document?.createEmbeddedDocuments('TableResult', [resultData]);
   }

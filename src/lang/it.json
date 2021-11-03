@@ -32,6 +32,10 @@
       "uploadFileUtil": {
         "name": "Upload file util",
         "hint": "Un settaggio per uploadare file audio sul server"
+      },
+      "integrationWithPolyglot":{
+        "name": "Integrazione con Polyglot",
+        "hint": "Integrazione con Polyglot module"
       }
     }
   }

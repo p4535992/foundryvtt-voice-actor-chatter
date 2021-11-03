@@ -3,6 +3,8 @@ import { getCanvas, getGame, VOICE_ACTOR_CHATTER_MODULE_NAME } from './settings'
 import { onRender, VoiceActor } from './voiceactor';
 import { VoiceActorChatter } from './voiceactorchatter';
 
+export let polyglotIsActive;
+
 export const readyHooks = async () => {
   // setup all the hooks
   Hooks.on(`renderActorSheet`, onRender);
@@ -59,4 +61,5 @@ export const setupHooks = () => {
 
 export const initHooks = () => {
   warn('Init Hooks processing');
+  polyglotIsActive = <boolean>getGame().modules.get('polyglot')?.active && getGame().settings.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'integrationWithPolyglot');
 };
