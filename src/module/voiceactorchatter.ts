@@ -30,17 +30,17 @@ export class VoiceActorChatter {
     return tables;
   };
 
-  getChatterPolyglotTables = function (lang:string[]) {
+  getChatterPolyglotTables = function (lang:string) {
     const voiceActorFolder = <Folder>(
       getGame().folders?.contents.filter((x) => x.type == 'RollTable' && x.name?.toLowerCase() == 'voice actor polyglot')[0]
     );
     if (!voiceActorFolder) {
       ui.notifications?.error(
-        `The '${VOICE_ACTOR_CHATTER_MODULE_NAME}' module requires a folder with name (case insensitive) 'voice actor' on the rollTable sidebar.`,
+        `The '${VOICE_ACTOR_CHATTER_MODULE_NAME}' module requires a folder with name (case insensitive) 'voice actor polyglot' on the rollTable sidebar.`,
       );
       return [];
     }
-    const map:Map<string,RollTable[]> = new Map<string,RollTable[]>();
+    // const map:Map<string,RollTable[]> = new Map<string,RollTable[]>();
     // languages.forEach((lang:string) =>{
       const tables = <RollTable[]>(
         getGame().tables?.contents.filter(
@@ -96,37 +96,8 @@ export class VoiceActorChatter {
 
     // Integration with polyglot
     if(polyglotIsActive){
-      //@ts-ignore
-      const polyglot:Polyglot = <Polyglot>window.polyglot.polyglot;
-      const currentLanguageProvider:any = polyglot.LanguageProvider;
-      // TODO get Languages from token
-      const languagesTarget:string[] = [];
-      // TODO get actors from current users usually just one
-      const actors = [];
-      // const languagesSource:Set<string> = polyglot.getUserLanguages(actors);
-      const langNotKnow:string[] = [];
-      languagesTarget.forEach((lang:string) =>{
-        if (lang){
-          const conditions = !polyglot._isTruespeech(lang) && !polyglot.known_languages.has(polyglot.comprehendLanguages) && !currentLanguageProvider.conditions(polyglot, lang);
-          if (conditions) {
-            // span.title = "????";
-            // span.textContent = polyglot.scrambleString(span.textContent, journalSheet._id, lang);
-            // span.style.font = polyglot._getFontStyle(lang);
-            langNotKnow.push(lang);
-          }
-        }
-      });
-      if(langNotKnow && langNotKnow.length > 0){
-        // I just get the first language not know from the actor
-        const lang = langNotKnow[0];
-        const eligableTablesPolyglot: RollTable[] = tables.filter((x: RollTable) =>
-          npcTokens.filter((t: TokenDocument) =>
-            x.name?.toLowerCase().includes(t.name?.toLowerCase().replace(' voice '+ lang, '').trim()),
-          ),
-        );
-
-        const tableIndexPolyglot = Math.floor(Math.random() * eligableTablesPolyglot.length + 0);
-        const tablePolyglot = eligableTablesPolyglot[tableIndexPolyglot];
+      const tablePolyglot = this._checkRollTablePolyglot([token], options);
+      if(tablePolyglot){
         table = tablePolyglot;
       }
     }
@@ -157,7 +128,15 @@ export class VoiceActorChatter {
     if (eligableTables.length == 0) return;
 
     const tableIndex = Math.floor(Math.random() * eligableTables.length + 0);
-    const table: RollTable = eligableTables[tableIndex];
+    let table: RollTable = eligableTables[tableIndex];
+
+    // Integration with polyglot
+    if(polyglotIsActive){
+      const tablePolyglot = this._checkRollTablePolyglot([token.document], options);
+      if(tablePolyglot){
+        table = tablePolyglot;
+      }
+    }
 
     const roll = await table.data.document.roll();
     const result = roll.results[0].data.text;
@@ -189,7 +168,7 @@ export class VoiceActorChatter {
     if (eligableTables.length == 0) return;
 
     const tableIndex = Math.floor(Math.random() * eligableTables.length + 0);
-    const table: RollTable = eligableTables[tableIndex];
+    let table: RollTable = eligableTables[tableIndex];
 
     const eligableTokens = npcTokens.filter((x: Token) =>
       x.name?.toLowerCase().includes(<string>table.name?.toLowerCase().replace(' voice', '').trim()),
@@ -197,6 +176,16 @@ export class VoiceActorChatter {
 
     const tokenIndex = Math.floor(Math.random() * eligableTokens.length + 0);
     const token = eligableTokens[tokenIndex];
+
+    if (token == undefined) return;
+
+    // Integration with polyglot
+    if(polyglotIsActive){
+      const tablePolyglot = this._checkRollTablePolyglot([token.document], options);
+      if(tablePolyglot){
+        table = tablePolyglot;
+      }
+    }
 
     const roll = await table.data.document.roll();
     const result = roll.results[0].data.text;
@@ -217,5 +206,81 @@ export class VoiceActorChatter {
   async turnOffGlobalTimerChatter() {
     window.clearInterval(VoiceActorChatter.timer);
     VoiceActorChatter.timer = undefined;
+  }
+
+  _checkRollTablePolyglot(npcTokens:TokenDocument[], options:any={}):RollTable|null {
+    //@ts-ignore
+    const polyglot:Polyglot = <Polyglot>window.polyglot.polyglot;
+    const currentLanguageProvider:any = polyglot.LanguageProvider;
+
+    // get actors from current targets usually just one
+    const actors:Actor[] = [];
+    npcTokens.forEach((t:TokenDocument) => {
+      if(t.actor){
+        actors.push(t.actor);
+      }
+    });
+
+    // Recover knowed languages of user
+    const actorSource = <Actor>getGame().user?.character;
+    const languagesSourceArray:Set<string>[] = polyglot.getUserLanguages([actorSource]);
+    const languagesSource = new Set();
+    for (const set of languagesSourceArray) {
+      for (const element of set) {
+        languagesSource.add(element);
+      }
+    }
+
+    // Recover knowed languages of tokens
+    const languagesTargetArray:Set<string>[] = polyglot.getUserLanguages(actors);
+    const languagesTarget = new Set();
+    for (const set of languagesTargetArray) {
+      for (const element of set) {
+        languagesTarget.add(element);
+      }
+    }
+    
+    const langNotKnow:string[] = [];
+    const langKnow:string[] = [];
+    languagesSource.forEach((lang:string) =>{
+      if (lang){
+        const conditions = !polyglot._isTruespeech(lang) && !polyglot.known_languages.has(polyglot.comprehendLanguages) && !currentLanguageProvider.conditions(polyglot, lang);
+        // if (conditions) {
+        //   // span.title = "????";
+        //   // span.textContent = polyglot.scrambleString(span.textContent, journalSheet._id, lang);
+        //   // span.style.font = polyglot._getFontStyle(lang);
+        //   langNotKnow.push(lang);
+        // }
+        if(options.langs){
+          if(options.langs.includes(lang)){
+            langKnow.push(lang);
+          }else{
+            langNotKnow.push(lang);
+          }
+        }else{
+          if(!conditions || Array.from(languagesTarget).includes(lang)){
+            langKnow.push(lang);
+          }else{
+            langNotKnow.push(lang);
+          }
+        }
+      }
+    });
+
+    if(langKnow.length == 0 && langNotKnow.length > 0){
+      // For now I just get the first language not know from the actor
+      const lang = langNotKnow[0];
+      const tables: RollTable[] = this.getChatterPolyglotTables(lang);
+      const eligableTablesPolyglot: RollTable[] = tables.filter((x: RollTable) =>
+        npcTokens.filter((t: TokenDocument) =>
+          x.name?.toLowerCase().includes(t.name?.toLowerCase().replace(' voice '+ lang, '').trim()),
+        ),
+      );
+
+      const tableIndexPolyglot = Math.floor(Math.random() * eligableTablesPolyglot.length + 0);
+      const tablePolyglot = eligableTablesPolyglot[tableIndexPolyglot];
+      return tablePolyglot;
+    }
+    return null;
   }
 }

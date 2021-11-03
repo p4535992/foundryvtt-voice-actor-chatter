@@ -124,10 +124,6 @@ When an Actor walks into a Room (defined by an invisble actor), have a specific 
 @Actor[TriggerA] @Macro[OXyjmVhEGo3eTaJz]{Specific Token Chatter}
 ```
 
-```
-
-```
-
 # API
 
 ## Actor Voice Global Chatter
@@ -150,6 +146,12 @@ macro code if you want to share the sounds with all the players
 game.voiceActorChatter.globalChatter({toAll: true})
 ```
 
+macro code if you want to check the language withpolyglot given a explicit language
+
+```js
+game.voiceActorChatter.globalChatter({langs: ["gnomish", "gith"]})
+```
+
 ## Global Chatter Every Interval
 
 Every interval as measured in milliseconds, executes `globalChatter()`.
@@ -168,6 +170,12 @@ macro code if you want to share the sounds with all the players
 
 ```js
 game.voiceActorChatter.randomGlobalChatterEvery(milliseconds, {toAll: true})
+```
+
+macro code if you want to check the language withpolyglot given a explicit language
+
+```js
+game.voiceActorChatter.randomGlobalChatterEvery(milliseconds, {langs: ["gnomish", "gith"]});
 ```
 
 ## Disable Global Chatter
@@ -206,6 +214,13 @@ var token = game.scenes.filter(x => x.active)[0].data.tokens.filter(x => x.name 
 game.voiceActorChatter.tokenChatter(token, {toAll: true});
 ```
 
+macro code if you want to check the language withpolyglot given a explicit language
+
+```js
+var token = game.scenes.filter(x => x.active)[0].data.tokens.filter(x => x.name == "Human Thug C")[0];
+game.voiceActorChatter.tokenChatter(token, {langs: ["gnomish", "gith"]});
+```
+
 ## Selected Chatter
 
 Grabs the currently selected Tokens and tries to find matching Chatter Tables. If none, exits. If one or more, randomly picks one and an elibable Token and displays a rolled result from the Table as a ChatBubble.
@@ -224,6 +239,12 @@ macro code if you want to share the sounds with all the players
 
 ```js
 game.voiceActorChatter.selectedChatter(token, {toAll: true});
+```
+
+macro code if you want to check the language withpolyglot given a explicit language
+
+```js
+game.voiceActorChatter.selectedChatter(token, {langs: ["gnomish", "gith"]});
 ```
 
 # Build

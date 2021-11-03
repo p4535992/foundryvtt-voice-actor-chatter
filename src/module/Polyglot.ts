@@ -60,7 +60,7 @@ export interface Polyglot {
 	 */
 	updateChatMessagesDelayed():void;
 
-	getUserLanguages(actors:Actor[]):Set<string>;
+	getUserLanguages(actors:Actor[]):Set<string>[];
 
 	/**
 	 *

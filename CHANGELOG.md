@@ -1,3 +1,7 @@
+# 0.2.4
+
+- Integration with polyglot module
+
 # 0.2.0 - 
 
 - Convert project to typescript
