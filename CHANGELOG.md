@@ -1,3 +1,8 @@
+# 0.2.5
+
+- Some rename, bug fix and performance
+- Update readme
+
 # 0.2.4
 
 - Integration with polyglot module

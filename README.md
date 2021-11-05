@@ -124,7 +124,30 @@ When an Actor walks into a Room (defined by an invisble actor), have a specific 
 @Actor[TriggerA] @Macro[OXyjmVhEGo3eTaJz]{Specific Token Chatter}
 ```
 
+# Features
+
+- Allow Owner recording : Enable to let players record and playback on their owned actors. Requires FILES_UPLOAD permission for players.
+
+- Allow Limited & Observer playback: Enable to let players playback clips on actors they have Limited or Observer permissions on. Players cannot record to these actors.
+
+- Custom directory path: Custom directory path
+
+- Disable header Sheet Buttons: Disable header Sheet Buttons after you are ok with the chatter audio file
+
+- Upload file util: A setting for upload file audio on the server
+
+- Integration with Polyglot: Set up different rolltable one for each language and change the audio file with customized one for that language.
+
+- Integration with NPC Chatter: Integration with NPC Chatter module
+
 # API
+
+## Options Parameters
+
+| Key    | SubKey  | Type              | Description                                                     | Default |
+|:------:|:-------:|:-----------------:|:---------------------------------------------------------------:|:-------:|
+| toAll  |         | boolean           | Broadcast audio to all players                                  | false   |
+| langs  |         | array (of String) | Explicit languages known to target ignore the polyglot settings | []      |
 
 ## Actor Voice Global Chatter
 

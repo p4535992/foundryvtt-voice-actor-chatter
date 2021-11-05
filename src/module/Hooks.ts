@@ -1,9 +1,14 @@
 import { log, warn } from '../main';
-import { getCanvas, getGame, VOICE_ACTOR_CHATTER_MODULE_NAME } from './settings';
+import { getCanvas, getGame } from './helpers';
+import { VOICE_ACTOR_CHATTER_MODULE_NAME } from './settings';
 import { onRender, VoiceActor } from './voiceactor';
 import { VoiceActorChatter } from './voiceactorchatter';
 
+const game = getGame();
+const canvas = getCanvas();
+
 export let polyglotIsActive;
+export let npcChatterIsActive;
 
 export const readyHooks = async () => {
   // setup all the hooks
@@ -11,9 +16,9 @@ export const readyHooks = async () => {
 
   Hooks.on(`renderJournalSheet`, onRender);
 
-  if (getGame().user?.isGM) {
+  if (game.user?.isGM) {
     // Will be used when custom dirs are supported
-    const customDirectory = getGame().settings.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'customDirectory') ?? '';
+    const customDirectory = game.settings.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'customDirectory') ?? '';
     if (customDirectory) {
       // Ensure the VA dir exists
       try {
@@ -43,14 +48,14 @@ export const readyHooks = async () => {
 
   // Voice Chatter
   //@ts-ignore
-  getGame().voiceActorChatter = new VoiceActorChatter();
+  game.voiceActorChatter = new VoiceActorChatter();
   log('Is now ready');
 
-  getGame().socket?.on(`module.${VOICE_ACTOR_CHATTER_MODULE_NAME}`, async (toShow) => {
+  game.socket?.on(`module.${VOICE_ACTOR_CHATTER_MODULE_NAME}`, async (toShow) => {
     //log("Got token " + toShow.tokenId + " with text " + toShow.msg);
-    const token = <Token>getCanvas().tokens?.get(toShow.tokenId);
+    const token = <Token>canvas.tokens?.get(toShow.tokenId);
     //console.log(token);
-    // getCanvas().hud.bubbles.say(token, toShow.msg, false);
+    // canvas.hud.bubbles.say(token, toShow.msg, false);
     VoiceActor.playClipRandomFromToken(token);
   });
 };
@@ -61,5 +66,10 @@ export const setupHooks = () => {
 
 export const initHooks = () => {
   warn('Init Hooks processing');
-  polyglotIsActive = <boolean>getGame().modules.get('polyglot')?.active && getGame().settings.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'integrationWithPolyglot');
+  polyglotIsActive =
+    <boolean>game.modules.get('polyglot')?.active &&
+    game.settings.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'integrationWithPolyglot');
+  npcChatterIsActive =
+    <boolean>game.modules.get('npc-chatter')?.active &&
+    game.settings.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'integrationWithNpcChatter');
 };

@@ -1,14 +1,18 @@
+import { getCanvas, getGame } from './helpers';
 import { polyglotIsActive } from './Hooks';
 import { Polyglot } from './Polyglot';
-import { getCanvas, getGame, VOICE_ACTOR_CHATTER_MODULE_NAME } from './settings';
+import { VOICE_ACTOR_CHATTER_MODULE_NAME } from './settings';
 import { VoiceActor } from './voiceactor';
+
+const game = getGame();
+const canvas = getCanvas();
 
 export class VoiceActorChatter {
   static timer;
 
-  getChatterTables = function () {
+  getVoiceChatterTables = function () {
     const voiceActorFolder = <Folder>(
-      getGame().folders?.contents.filter((x) => x.type == 'RollTable' && x.name?.toLowerCase() == 'voice actor')[0]
+      game.folders?.contents.filter((x) => x.type == 'RollTable' && x.name?.toLowerCase() == 'voice actor')[0]
     );
     if (!voiceActorFolder) {
       ui.notifications?.error(
@@ -17,7 +21,7 @@ export class VoiceActorChatter {
       return [];
     }
     const tables = <RollTable[]>(
-      getGame().tables?.contents.filter(
+      game.tables?.contents.filter(
         (x) => x.name?.toLowerCase().endsWith('voice') && x.data.folder == voiceActorFolder._id,
       )
     );
@@ -30,9 +34,9 @@ export class VoiceActorChatter {
     return tables;
   };
 
-  getChatterPolyglotTables = function (lang:string) {
+  getVoiceChatterPolyglotTables = function (lang: string) {
     const voiceActorFolder = <Folder>(
-      getGame().folders?.contents.filter((x) => x.type == 'RollTable' && x.name?.toLowerCase() == 'voice actor polyglot')[0]
+      game.folders?.contents.filter((x) => x.type == 'RollTable' && x.name?.toLowerCase() == 'voice actor polyglot')[0]
     );
     if (!voiceActorFolder) {
       ui.notifications?.error(
@@ -42,12 +46,12 @@ export class VoiceActorChatter {
     }
     // const map:Map<string,RollTable[]> = new Map<string,RollTable[]>();
     // languages.forEach((lang:string) =>{
-      const tables = <RollTable[]>(
-        getGame().tables?.contents.filter(
-          (x) => x.name?.toLowerCase().endsWith('voice ' + lang) && x.data.folder == voiceActorFolder._id,
-        )
-      );
-      // map.put(lang, tables);
+    const tables = <RollTable[]>(
+      game.tables?.contents.filter(
+        (x) => x.name?.toLowerCase().endsWith('voice ' + lang) && x.data.folder == voiceActorFolder._id,
+      )
+    );
+    // map.put(lang, tables);
     // });
     if (!tables || tables.length == 0) {
       ui.notifications?.error(
@@ -61,17 +65,17 @@ export class VoiceActorChatter {
   randomGlobalChatterEvery(milliseconds, options: any = {}) {
     VoiceActorChatter.timer = window.setInterval(() => {
       //@ts-ignore
-      getGame().voiceActorChatter?.globalChatter(options);
+      game.voiceActorChatter?.globalChatter(options);
     }, milliseconds);
   }
 
   async globalChatter(options: any = {}) {
-    const tables: RollTable[] = this.getChatterTables();
+    const tables: RollTable[] = this.getVoiceChatterTables();
 
     const userCharacterActorIds = <string[]>getGame()
       .users?.contents.filter((x: User) => x.character)
       .map((x) => x.character?.id);
-    const activeScene = <Scene>getGame().scenes?.filter((x: Scene) => x.active)[0];
+    const activeScene = <Scene>game.scenes?.filter((x: Scene) => x.active)[0];
     const npcTokens = <TokenDocument[]>(
       activeScene.data.tokens.filter((x: TokenDocument) => !userCharacterActorIds.includes(<string>x.actor?.id))
     );
@@ -95,9 +99,9 @@ export class VoiceActorChatter {
     if (token == undefined) return;
 
     // Integration with polyglot
-    if(polyglotIsActive){
+    if (polyglotIsActive) {
       const tablePolyglot = this._checkRollTablePolyglot([token], options);
-      if(tablePolyglot){
+      if (tablePolyglot) {
         table = tablePolyglot;
       }
     }
@@ -106,7 +110,7 @@ export class VoiceActorChatter {
     const result = roll.results[0].data.text;
 
     // Print on chat (Integration with NPCChatter)
-    // getGame().socket.emit("module."+VoiceActor.moduleName, {
+    // game.socket.emit("module."+VoiceActor.moduleName, {
     //   tokenId: token.data._id,
     //   msg: result
     // });
@@ -119,7 +123,7 @@ export class VoiceActorChatter {
   }
 
   async tokenChatter(token: Token, options: any = {}) {
-    const tables: RollTable[] = this.getChatterTables();
+    const tables: RollTable[] = this.getVoiceChatterTables();
 
     const eligableTables = tables.filter((x) =>
       token.name.toLowerCase().includes(<string>x.name?.toLowerCase().replace(' voice', '').trim()),
@@ -131,9 +135,9 @@ export class VoiceActorChatter {
     let table: RollTable = eligableTables[tableIndex];
 
     // Integration with polyglot
-    if(polyglotIsActive){
+    if (polyglotIsActive) {
       const tablePolyglot = this._checkRollTablePolyglot([token.document], options);
-      if(tablePolyglot){
+      if (tablePolyglot) {
         table = tablePolyglot;
       }
     }
@@ -142,7 +146,7 @@ export class VoiceActorChatter {
     const result = roll.results[0].data.text;
 
     // Print on chat (Integration with NPCChatter)
-    // getGame().socket.emit("module."+VoiceActor.moduleName, {
+    // game.socket.emit("module."+VoiceActor.moduleName, {
     //   tokenId: token.data._id,
     //   msg: result
     // });
@@ -155,9 +159,9 @@ export class VoiceActorChatter {
   }
 
   async selectedChatter(options: any = {}) {
-    const tables: RollTable[] = this.getChatterTables();
+    const tables: RollTable[] = this.getVoiceChatterTables();
 
-    const npcTokens = <Token[]>getCanvas().tokens?.controlled;
+    const npcTokens = <Token[]>canvas.tokens?.controlled;
 
     const eligableTables = tables.filter((x) =>
       npcTokens.filter((t: Token) =>
@@ -180,9 +184,9 @@ export class VoiceActorChatter {
     if (token == undefined) return;
 
     // Integration with polyglot
-    if(polyglotIsActive){
+    if (polyglotIsActive) {
       const tablePolyglot = this._checkRollTablePolyglot([token.document], options);
-      if(tablePolyglot){
+      if (tablePolyglot) {
         table = tablePolyglot;
       }
     }
@@ -191,7 +195,7 @@ export class VoiceActorChatter {
     const result = roll.results[0].data.text;
 
     // Print on chat (Integration with NPCChatter)
-    // getGame().socket.emit("module."+VoiceActor.moduleName, {
+    // game.socket.emit("module."+VoiceActor.moduleName, {
     //   tokenId: token.id,
     //   msg: result
     // });
@@ -208,22 +212,22 @@ export class VoiceActorChatter {
     VoiceActorChatter.timer = undefined;
   }
 
-  _checkRollTablePolyglot(npcTokens:TokenDocument[], options:any={}):RollTable|null {
+  _checkRollTablePolyglot(npcTokens: TokenDocument[], options: any = {}): RollTable | null {
     //@ts-ignore
-    const polyglot:Polyglot = <Polyglot>window.polyglot.polyglot;
-    const currentLanguageProvider:any = polyglot.LanguageProvider;
+    const polyglot: Polyglot = <Polyglot>window.polyglot.polyglot;
+    const currentLanguageProvider: any = polyglot.LanguageProvider;
 
     // get actors from current targets usually just one
-    const actors:Actor[] = [];
-    npcTokens.forEach((t:TokenDocument) => {
-      if(t.actor){
+    const actors: Actor[] = [];
+    npcTokens.forEach((t: TokenDocument) => {
+      if (t.actor) {
         actors.push(t.actor);
       }
     });
 
     // Recover knowed languages of user
-    const actorSource = <Actor>getGame().user?.character;
-    const languagesSourceArray:Set<string>[] = polyglot.getUserLanguages([actorSource]);
+    const actorSource = <Actor>game.user?.character;
+    const languagesSourceArray: Set<string>[] = polyglot.getUserLanguages([actorSource]);
     const languagesSource = new Set();
     for (const set of languagesSourceArray) {
       for (const element of set) {
@@ -232,48 +236,56 @@ export class VoiceActorChatter {
     }
 
     // Recover knowed languages of tokens
-    const languagesTargetArray:Set<string>[] = polyglot.getUserLanguages(actors);
+    const languagesTargetArray: Set<string>[] = polyglot.getUserLanguages(actors);
     const languagesTarget = new Set();
     for (const set of languagesTargetArray) {
       for (const element of set) {
         languagesTarget.add(element);
       }
     }
-    
-    const langNotKnow:string[] = [];
-    const langKnow:string[] = [];
-    languagesSource.forEach((lang:string) =>{
-      if (lang){
-        const conditions = !polyglot._isTruespeech(lang) && !polyglot.known_languages.has(polyglot.comprehendLanguages) && !currentLanguageProvider.conditions(polyglot, lang);
+
+    const langNotKnow: string[] = [];
+    const langKnow: string[] = [];
+    languagesSource.forEach((lang: string) => {
+      if (lang) {
+        const conditions =
+          !polyglot._isTruespeech(lang) &&
+          !polyglot.known_languages.has(polyglot.comprehendLanguages) &&
+          !currentLanguageProvider.conditions(polyglot, lang);
         // if (conditions) {
         //   // span.title = "????";
         //   // span.textContent = polyglot.scrambleString(span.textContent, journalSheet._id, lang);
         //   // span.style.font = polyglot._getFontStyle(lang);
         //   langNotKnow.push(lang);
         // }
-        if(options.langs){
-          if(options.langs.includes(lang)){
+        if (options.langs) {
+          if (options.langs.includes(lang)) {
             langKnow.push(lang);
-          }else{
+          } else {
             langNotKnow.push(lang);
           }
-        }else{
-          if(!conditions || Array.from(languagesTarget).includes(lang)){
+        } else {
+          if (!conditions || Array.from(languagesTarget).includes(lang)) {
             langKnow.push(lang);
-          }else{
+          } else {
             langNotKnow.push(lang);
           }
         }
       }
     });
 
-    if(langKnow.length == 0 && langNotKnow.length > 0){
+    if (langKnow.length == 0 && langNotKnow.length > 0) {
       // For now I just get the first language not know from the actor
       const lang = langNotKnow[0];
-      const tables: RollTable[] = this.getChatterPolyglotTables(lang);
+      const tables: RollTable[] = this.getVoiceChatterPolyglotTables(lang);
       const eligableTablesPolyglot: RollTable[] = tables.filter((x: RollTable) =>
         npcTokens.filter((t: TokenDocument) =>
-          x.name?.toLowerCase().includes(t.name?.toLowerCase().replace(' voice '+ lang, '').trim()),
+          x.name?.toLowerCase().includes(
+            t.name
+              ?.toLowerCase()
+              .replace(' voice ' + lang, '')
+              .trim(),
+          ),
         ),
       );
 

@@ -5,9 +5,11 @@
 import { TokenData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
 import { BaseTableResult } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/documents.mjs';
 import { i18n, warn } from '../main';
-import { getGame, VOICE_ACTOR_CHATTER_MODULE_NAME } from './settings';
+import { getGame } from './helpers';
+import { VOICE_ACTOR_CHATTER_MODULE_NAME } from './settings';
 import { VoiceActorChatter } from './voiceactorchatter';
 
+const game = getGame();
 export class VoiceActor {
   static moduleName = VOICE_ACTOR_CHATTER_MODULE_NAME;
 
@@ -17,7 +19,7 @@ export class VoiceActor {
     isJournal: boolean,
   ): Promise<{ file: string; name: string }> => {
     if (!customDirectory) {
-      customDirectory = <string>getGame().settings.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'customDirectory') ?? '';
+      customDirectory = <string>game.settings.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'customDirectory') ?? '';
     }
 
     if (customDirectory) {
@@ -164,10 +166,10 @@ export class VoiceActor {
 
   static playClipRandomFromToken = async function (token: Token) {
     const voiceActorFolder = <Folder>(
-      getGame().folders?.contents.filter((x) => x.type == 'RollTable' && x.name?.toLowerCase() == 'voice actor')[0]
+      game.folders?.contents.filter((x) => x.type == 'RollTable' && x.name?.toLowerCase() == 'voice actor')[0]
     );
     const tables = <RollTable[]>(
-      getGame().tables?.contents.filter(
+      game.tables?.contents.filter(
         (x) => x.name?.toLowerCase().endsWith('voice') || x.data.folder == voiceActorFolder._id,
       )
     );
@@ -182,7 +184,7 @@ export class VoiceActor {
   };
 
   static playClip = async function (clip: string, toAllWithSocket: boolean) {
-    // let playVolume = getGame().settings.get("core", "globalInterfaceVolume"); // TODO CUSTOMIZE WITH MODULE SETTINGS ???
+    // let playVolume = game.settings.get("core", "globalInterfaceVolume"); // TODO CUSTOMIZE WITH MODULE SETTINGS ???
 
     // Audio file to be played back
     let vaPlaybackFile;
@@ -204,7 +206,7 @@ export class VoiceActor {
       // Play file
       const payload = {
         src: clip,
-        volume: getGame().settings.get('core', 'globalInterfaceVolume'), // TODO CUSTOMIZE WITH MODULE SETTINGS ???
+        volume: game.settings.get('core', 'globalInterfaceVolume'), // TODO CUSTOMIZE WITH MODULE SETTINGS ???
         onend: onFinish,
         onstop: onFinish,
       };
@@ -223,7 +225,7 @@ export class VoiceActor {
       // vaStates.playing = true;
       // title.find("#voiceactor-playback #voiceactor-playback-icon").removeClass('fa-play').addClass('fa-stop');
       if (toAllWithSocket) {
-        getGame().socket?.emit('playAudio', payload);
+        game.socket?.emit('playAudio', payload);
         ui.notifications?.notify(i18n('foundryvtt-voice-actor-chatter.notif.broadcasted'));
       } else {
         //AudioHelper.play({src: fileClipPlayPath, volume: playVolume, autoplay: true, loop: false}, true);
@@ -234,18 +236,18 @@ export class VoiceActor {
   };
 
   static retrieveOrCreateRollTable = async function (tokenData: Token, fileNamePath: string, fileName: string) {
-    const voiceActorFolder = getGame().folders?.contents.filter(
+    const voiceActorFolder = game.folders?.contents.filter(
       (x: Folder) => x.type == 'RollTable' && x.name?.toLowerCase() == 'voice actor',
     )[0];
     const actorRollTableName = tokenData.actor?.name + ' voice';
-    let myTable: RollTable | undefined = getGame().tables?.contents.find(
+    let myTable: RollTable | undefined = game.tables?.contents.find(
       (table: RollTable) => table.name?.toLowerCase() == actorRollTableName.toLowerCase(),
     );
     if (!myTable) {
       const formula = '1d20';
       const min = 1;
       const max = 20;
-      // ui.notifications.notify(getGame().i18n.format("foundryvtt-voice-actor-chatter.notif.no-rolltable-for-actor", actorRollTableName));
+      // ui.notifications.notify(game.i18n.format("foundryvtt-voice-actor-chatter.notif.no-rolltable-for-actor", actorRollTableName));
       myTable = <RollTable>await RollTable.create({
         name: actorRollTableName,
         // description: actorRollTableName, // This appears on every roll in the chat!
@@ -318,37 +320,37 @@ export class VoiceActor {
   //     let entity;
   //     switch (collection) {
   //         case 'Actor':
-  //                 entity = getGame().actors.getName(text);
+  //                 entity = game.actors.getName(text);
   //                 resultId = entity?.id||''
   //                 img = entity?.img||img;
   //             break;
   //         case 'Scene':
-  //                 entity = getGame().scenes.getName(text);
+  //                 entity = game.scenes.getName(text);
   //                 resultId = entity?.id||''
   //                 img = entity?.img||img;
   //             break;
   //         case 'Macro':
-  //                 entity = getGame().macros.getName(text);
+  //                 entity = game.macros.getName(text);
   //                 resultId = entity?.id||''
   //                 img = entity?.data?.img||img;
   //             break;
   //         case 'Playlist':
-  //                 entity = getGame().playlists.getName(text);
+  //                 entity = game.playlists.getName(text);
   //                 resultId = entity?.id||''
   //                 // img = entity?.img||img;
   //             break;
   //         case 'JournalEntry':
-  //                 entity = getGame().journal.getName(text);
+  //                 entity = game.journal.getName(text);
   //                 resultId = entity?.id||''
   //                 img = entity?.data?.img||img;
   //             break;
   //         case 'RollTable':
-  //                 entity = getGame().tables.getName(text);
+  //                 entity = game.tables.getName(text);
   //                 resultId = entity?.id||''
   //                 img = entity?.data?.img||img;
   //             break;
   //         case 'Item':
-  //                 entity = getGame().items.getName(text);
+  //                 entity = game.items.getName(text);
   //                 resultId = entity?.id||''
   //                 img = entity?.img||img;
   //             break;
@@ -361,12 +363,12 @@ export class VoiceActor {
 
 export const onRender = async (app, html, data) => {
   const disableHeaderSheetButtons =
-    <string>getGame().settings.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'disableHeaderSheetButtons') ?? false;
+    <string>game.settings.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'disableHeaderSheetButtons') ?? false;
   if (disableHeaderSheetButtons) {
     return;
   }
 
-  const customDirectory = <string>getGame().settings.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'customDirectory') ?? '';
+  const customDirectory = <string>game.settings.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'customDirectory') ?? '';
 
   // Get window-title from html so we can prepend our buttons
   const title = html.find('.window-title');
@@ -394,10 +396,10 @@ export const onRender = async (app, html, data) => {
   let buttons = ``;
 
   if (
-    getGame().user?.isGM ||
+    game.user?.isGM ||
     (data.owner &&
-      getGame().settings?.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'playersRecordOwned') &&
-      getGame().user?.hasPermission('FILES_UPLOAD'))
+      game.settings?.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'playersRecordOwned') &&
+      game.user?.hasPermission('FILES_UPLOAD'))
   ) {
     buttons += `<button id="voiceactor-record" class="voiceactor-button" title="${i18n(
       'foundryvtt-voice-actor-chatter.ui.button-tooltip-record',
@@ -406,11 +408,7 @@ export const onRender = async (app, html, data) => {
         </button>`;
   }
 
-  if (
-    getGame().user?.isGM ||
-    data.owner ||
-    getGame().settings.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'playersPlaybackLimited')
-  ) {
+  if (game.user?.isGM || data.owner || game.settings.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'playersPlaybackLimited')) {
     buttons += `<button id="voiceactor-playback" class="voiceactor-button" title="${i18n(
       'foundryvtt-voice-actor-chatter.ui.button-tooltip-playback',
     )}">
@@ -487,7 +485,7 @@ export const onRender = async (app, html, data) => {
 
             // Only really works with Firefox, chrome has some weird caching, requiring the user to wait about 30 seconds
             //@ts-ignore
-            getGame().audio?.buffers.delete(`${dirName[0] == '/' ? dirName.substr(1) : dirName}/${fileName}`);
+            game.audio?.buffers.delete(`${dirName[0] == '/' ? dirName.substr(1) : dirName}/${fileName}`);
 
             title.find('#voiceactor-record #voiceactor-record-icon').removeClass('fa-stop').addClass('fa-microphone');
             title.find('#voiceactor-record #voiceactor-record-icon').css('color', 'lightgreen');
@@ -540,7 +538,7 @@ export const onRender = async (app, html, data) => {
       // Play file
       const payload = {
         src: clip,
-        volume: getGame().settings.get('core', 'globalInterfaceVolume'), // TODO CUSTOMIZE WITH MODULE SETTINGS ???
+        volume: game.settings.get('core', 'globalInterfaceVolume'), // TODO CUSTOMIZE WITH MODULE SETTINGS ???
         onend: onFinish,
         onstop: onFinish,
       };
@@ -559,7 +557,7 @@ export const onRender = async (app, html, data) => {
       vaStates.playing = true;
       title.find('#voiceactor-playback #voiceactor-playback-icon').removeClass('fa-play').addClass('fa-stop');
       if (ev.shiftKey) {
-        getGame().socket?.emit('playAudio', payload);
+        game.socket?.emit('playAudio', payload);
         ui.notifications?.notify(i18n('foundryvtt-voice-actor-chatter.notif.broadcasted'));
       }
     } else {

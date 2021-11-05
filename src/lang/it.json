@@ -33,9 +33,13 @@
         "name": "Upload file util",
         "hint": "Un settaggio per uploadare file audio sul server"
       },
-      "integrationWithPolyglot":{
-        "name": "Integrazione con Polyglot",
-        "hint": "Integrazione con Polyglot module"
+      "integrationWithPolyglot": {
+        "name": "Integrazione con Polyglot Module",
+        "hint": "Imposta diversi rolltable uno per ogni lingua e cambia il file audio con uno personalizzato per quella lingua"
+      },
+      "integrationWithNpcChatter": {
+        "name": "Integrazione con NPC Chatter Module",
+        "hint": "Integrazione con NPC Chatter module"
       }
     }
   }
