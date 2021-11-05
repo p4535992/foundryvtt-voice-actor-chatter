@@ -4,15 +4,12 @@ import { Polyglot } from './Polyglot';
 import { VOICE_ACTOR_CHATTER_MODULE_NAME } from './settings';
 import { VoiceActor } from './voiceactor';
 
-const game = getGame();
-const canvas = getCanvas();
-
 export class VoiceActorChatter {
   static timer;
 
   getVoiceChatterTables = function () {
     const voiceActorFolder = <Folder>(
-      game.folders?.contents.filter((x) => x.type == 'RollTable' && x.name?.toLowerCase() == 'voice actor')[0]
+      getGame().folders?.contents.filter((x) => x.type == 'RollTable' && x.name?.toLowerCase() == 'voice actor')[0]
     );
     if (!voiceActorFolder) {
       ui.notifications?.error(
@@ -21,7 +18,7 @@ export class VoiceActorChatter {
       return [];
     }
     const tables = <RollTable[]>(
-      game.tables?.contents.filter(
+      getGame().tables?.contents.filter(
         (x) => x.name?.toLowerCase().endsWith('voice') && x.data.folder == voiceActorFolder._id,
       )
     );
@@ -36,7 +33,7 @@ export class VoiceActorChatter {
 
   getVoiceChatterPolyglotTables = function (lang: string) {
     const voiceActorFolder = <Folder>(
-      game.folders?.contents.filter((x) => x.type == 'RollTable' && x.name?.toLowerCase() == 'voice actor polyglot')[0]
+      getGame().folders?.contents.filter((x) => x.type == 'RollTable' && x.name?.toLowerCase() == 'voice actor polyglot')[0]
     );
     if (!voiceActorFolder) {
       ui.notifications?.error(
@@ -47,7 +44,7 @@ export class VoiceActorChatter {
     // const map:Map<string,RollTable[]> = new Map<string,RollTable[]>();
     // languages.forEach((lang:string) =>{
     const tables = <RollTable[]>(
-      game.tables?.contents.filter(
+      getGame().tables?.contents.filter(
         (x) => x.name?.toLowerCase().endsWith('voice ' + lang) && x.data.folder == voiceActorFolder._id,
       )
     );
@@ -65,7 +62,7 @@ export class VoiceActorChatter {
   randomGlobalChatterEvery(milliseconds, options: any = {}) {
     VoiceActorChatter.timer = window.setInterval(() => {
       //@ts-ignore
-      game.voiceActorChatter?.globalChatter(options);
+      getGame().voiceActorChatter?.globalChatter(options);
     }, milliseconds);
   }
 
@@ -75,7 +72,7 @@ export class VoiceActorChatter {
     const userCharacterActorIds = <string[]>getGame()
       .users?.contents.filter((x: User) => x.character)
       .map((x) => x.character?.id);
-    const activeScene = <Scene>game.scenes?.filter((x: Scene) => x.active)[0];
+    const activeScene = <Scene>getGame().scenes?.filter((x: Scene) => x.active)[0];
     const npcTokens = <TokenDocument[]>(
       activeScene.data.tokens.filter((x: TokenDocument) => !userCharacterActorIds.includes(<string>x.actor?.id))
     );
@@ -110,7 +107,7 @@ export class VoiceActorChatter {
     const result = roll.results[0].data.text;
 
     // Print on chat (Integration with NPCChatter)
-    // game.socket.emit("module."+VoiceActor.moduleName, {
+    // getGame().socket.emit("module."+VoiceActor.moduleName, {
     //   tokenId: token.data._id,
     //   msg: result
     // });
@@ -146,7 +143,7 @@ export class VoiceActorChatter {
     const result = roll.results[0].data.text;
 
     // Print on chat (Integration with NPCChatter)
-    // game.socket.emit("module."+VoiceActor.moduleName, {
+    // getGame().socket.emit("module."+VoiceActor.moduleName, {
     //   tokenId: token.data._id,
     //   msg: result
     // });
@@ -161,7 +158,7 @@ export class VoiceActorChatter {
   async selectedChatter(options: any = {}) {
     const tables: RollTable[] = this.getVoiceChatterTables();
 
-    const npcTokens = <Token[]>canvas.tokens?.controlled;
+    const npcTokens = <Token[]>getCanvas().tokens?.controlled;
 
     const eligableTables = tables.filter((x) =>
       npcTokens.filter((t: Token) =>
@@ -195,7 +192,7 @@ export class VoiceActorChatter {
     const result = roll.results[0].data.text;
 
     // Print on chat (Integration with NPCChatter)
-    // game.socket.emit("module."+VoiceActor.moduleName, {
+    // getGame().socket.emit("module."+VoiceActor.moduleName, {
     //   tokenId: token.id,
     //   msg: result
     // });
@@ -226,7 +223,7 @@ export class VoiceActorChatter {
     });
 
     // Recover knowed languages of user
-    const actorSource = <Actor>game.user?.character;
+    const actorSource = <Actor>getGame().user?.character;
     const languagesSourceArray: Set<string>[] = polyglot.getUserLanguages([actorSource]);
     const languagesSource = new Set();
     for (const set of languagesSourceArray) {

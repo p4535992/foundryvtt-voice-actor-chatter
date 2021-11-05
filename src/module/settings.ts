@@ -3,10 +3,9 @@ import { getGame } from './helpers';
 
 export const VOICE_ACTOR_CHATTER_MODULE_NAME = 'foundryvtt-voice-actor-chatter';
 
-const game = getGame();
-
 export const registerSettings = function () {
-  game.settings.register(VOICE_ACTOR_CHATTER_MODULE_NAME, 'playersRecordOwned', {
+
+  getGame().settings.register(VOICE_ACTOR_CHATTER_MODULE_NAME, 'playersRecordOwned', {
     name: i18n('foundryvtt-voice-actor-chatter.settings.players-record-owned.name'),
     hint: i18n('foundryvtt-voice-actor-chatter.settings.players-record-owned.hint'),
     scope: 'world',
@@ -15,7 +14,7 @@ export const registerSettings = function () {
     type: Boolean,
   });
 
-  game.settings.register(VOICE_ACTOR_CHATTER_MODULE_NAME, 'playersPlaybackLimited', {
+  getGame().settings.register(VOICE_ACTOR_CHATTER_MODULE_NAME, 'playersPlaybackLimited', {
     name: i18n('foundryvtt-voice-actor-chatter.settings.players-playback-limited.name'),
     hint: i18n('foundryvtt-voice-actor-chatter.settings.players-playback-limited.hint'),
     scope: 'world',
@@ -24,12 +23,12 @@ export const registerSettings = function () {
     type: Boolean,
   });
 
-  game.settings.register(VOICE_ACTOR_CHATTER_MODULE_NAME, 'customDirectory', {
+  getGame().settings.register(VOICE_ACTOR_CHATTER_MODULE_NAME, 'customDirectory', {
     name: i18n('foundryvtt-voice-actor-chatter.settings.customDirectory.name'),
     hint: i18n('foundryvtt-voice-actor-chatter.settings.customDirectory.hint'),
     scope: 'world',
     config: true,
-    default: `/worlds/${game.world.id}/${VOICE_ACTOR_CHATTER_MODULE_NAME}`,
+    default: `/worlds/${getGame().world.id}/${VOICE_ACTOR_CHATTER_MODULE_NAME}`,
     type: String,
     //@ts-ignore
     filePicker: 'audio',
@@ -37,7 +36,7 @@ export const registerSettings = function () {
     // type: SoundPicker.Sound, //audioTypeFunc,
   });
 
-  game.settings.register(VOICE_ACTOR_CHATTER_MODULE_NAME, 'disableHeaderSheetButtons', {
+  getGame().settings.register(VOICE_ACTOR_CHATTER_MODULE_NAME, 'disableHeaderSheetButtons', {
     name: i18n('foundryvtt-voice-actor-chatter.settings.disableHeaderSheetButtons.name'),
     hint: i18n('foundryvtt-voice-actor-chatter.settings.disableHeaderSheetButtons.hint'),
     scope: 'world',
@@ -46,7 +45,7 @@ export const registerSettings = function () {
     type: Boolean,
   });
 
-  game.settings.register(VOICE_ACTOR_CHATTER_MODULE_NAME, 'uploadFileUtil', {
+  getGame().settings.register(VOICE_ACTOR_CHATTER_MODULE_NAME, 'uploadFileUtil', {
     name: i18n('foundryvtt-voice-actor-chatter.settings.uploadFileUtil.name'),
     hint: i18n('foundryvtt-voice-actor-chatter.settings.uploadFileUtil.hint'),
     scope: 'client',
@@ -59,7 +58,7 @@ export const registerSettings = function () {
     // type: SoundPicker.Sound, //audioTypeFunc,
   });
 
-  game.settings.register(VOICE_ACTOR_CHATTER_MODULE_NAME, 'integrationWithPolyglot', {
+  getGame().settings.register(VOICE_ACTOR_CHATTER_MODULE_NAME, 'integrationWithPolyglot', {
     name: i18n('foundryvtt-voice-actor-chatter.settings.integrationWithPolyglot.name'),
     hint: i18n('foundryvtt-voice-actor-chatter.settings.integrationWithPolyglot.hint'),
     scope: 'world',
@@ -70,7 +69,7 @@ export const registerSettings = function () {
 
   // TODO To developed
 
-  game.settings.register(VOICE_ACTOR_CHATTER_MODULE_NAME, 'integrationWithNpcChatter', {
+  getGame().settings.register(VOICE_ACTOR_CHATTER_MODULE_NAME, 'integrationWithNpcChatter', {
     name: i18n('foundryvtt-voice-actor-chatter.settings.integrationWithNpcChatter.name'),
     hint: i18n('foundryvtt-voice-actor-chatter.settings.integrationWithNpcChatter.hint'),
     scope: 'world',
