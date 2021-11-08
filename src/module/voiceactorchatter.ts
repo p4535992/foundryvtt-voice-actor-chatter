@@ -7,21 +7,21 @@ import { VoiceActor } from './voiceactor';
 export class VoiceActorChatter {
   static timer;
 
-  getVoiceChatterTables = function (token:Token|null) {
-    let voiceActorFolder;
-    if(token){
-      voiceActorFolder = <Folder>(
-        getGame().folders?.contents.filter((x) => x.type == 'RollTable' && x.name?.toLowerCase() == token.name?.toLowerCase() + ' voice actor')[0]
-      );
-    }else{
-      voiceActorFolder = <Folder>(
-        getGame().folders?.contents.filter((x) => x.type == 'RollTable' && x.name?.toLowerCase().endsWith(' voice actor'))[0]
-      );
-    }
+  getVoiceChatterTables = async function (token:Token|null):Promise<RollTable[]> {
+    const voiceActorFolder = await VoiceActor.retrieveOrCreateRollTableFolder(<Actor>token?.actor);
+    // if(token){
+    //   voiceActorFolder = <Folder>(
+    //     getGame().folders?.contents.filter((x) => x.type == 'RollTable' && x.name?.toLowerCase() == token.name?.toLowerCase() + ' voice actor')[0]
+    //   );
+    // }else{
+    //   voiceActorFolder = <Folder>(
+    //     getGame().folders?.contents.filter((x) => x.type == 'RollTable' && x.name?.toLowerCase().endsWith(' voice actor'))[0]
+    //   );
+    // }
     if (!voiceActorFolder) {
-      ui.notifications?.error(
-        `The '${VOICE_ACTOR_CHATTER_MODULE_NAME}' module requires a folder with name (case insensitive) 'voice actor' on the rollTable sidebar.`,
-      );
+      // ui.notifications?.error(
+      //   `The '${VOICE_ACTOR_CHATTER_MODULE_NAME}' module requires a folder with name (case insensitive) '${token?.name?.toLowerCase()} voice actor' on the rollTable sidebar.`,
+      // );
       return [];
     }
     const tables = <RollTable[]>(
@@ -38,14 +38,15 @@ export class VoiceActorChatter {
     return tables;
   };
 
-  getVoiceChatterPolyglotTables = function (tokenName:string, lang: string) {
-    const voiceActorFolder = <Folder>(
-      getGame().folders?.contents.filter((x) => x.type == 'RollTable' && x.name?.toLowerCase() == tokenName?.toLowerCase() + ' voice actor')[0]
-    );
+  getVoiceChatterPolyglotTables = async function (actor:Actor, lang: string) {
+    const voiceActorFolder = await VoiceActor.retrieveOrCreateRollTableFolder(actor);
+    // const voiceActorFolder = <Folder>(
+    //   getGame().folders?.contents.filter((x) => x.type == 'RollTable' && x.name?.toLowerCase() == tokenName?.toLowerCase() + ' voice actor')[0]
+    // );
     if (!voiceActorFolder) {
-      ui.notifications?.error(
-        `The '${VOICE_ACTOR_CHATTER_MODULE_NAME}' module requires a folder with name (case insensitive) 'voice actor' on the rollTable sidebar.`,
-      );
+      // ui.notifications?.error(
+      //   `The '${VOICE_ACTOR_CHATTER_MODULE_NAME}' module requires a folder with name (case insensitive) '${tokenName?.toLowerCase()} voice actor' on the rollTable sidebar.`,
+      // );
       return [];
     }
     // const map:Map<string,RollTable[]> = new Map<string,RollTable[]>();
@@ -74,7 +75,7 @@ export class VoiceActorChatter {
   }
 
   async globalChatter(options: any = {}) {
-    const tables: RollTable[] = this.getVoiceChatterTables(null);
+    const tables: RollTable[] = await this.getVoiceChatterTables(null);
 
     const userCharacterActorIds = <string[]>getGame()
       .users?.contents.filter((x: User) => x.character)
@@ -104,8 +105,8 @@ export class VoiceActorChatter {
 
     // Integration with polyglot
     if (polyglotIsActive) {
-      await this._createAutomaticPolyglotRolltable([token], options);
-      const tablePolyglot = this._checkRollTablePolyglot([token], options);
+      await this._createAutomaticPolyglotRolltable([token]);
+      const tablePolyglot = await this._checkRollTablePolyglot([token], options);
       if (tablePolyglot) {
         table = tablePolyglot;
       }
@@ -128,7 +129,7 @@ export class VoiceActorChatter {
   }
 
   async tokenChatter(token: Token, options: any = {}) {
-    const tables: RollTable[] = this.getVoiceChatterTables(token);
+    const tables: RollTable[] = await this.getVoiceChatterTables(token);
 
     const eligableTables = tables.filter((x) =>
       token.name.toLowerCase().includes(<string>x.name?.toLowerCase().replace(' voice', '').trim()),
@@ -141,8 +142,8 @@ export class VoiceActorChatter {
 
     // Integration with polyglot
     if (polyglotIsActive) {
-      await this._createAutomaticPolyglotRolltable([token.document], options);
-      const tablePolyglot = this._checkRollTablePolyglot([token.document], options);
+      await this._createAutomaticPolyglotRolltable([token.document]);
+      const tablePolyglot = await this._checkRollTablePolyglot([token.document], options);
       if (tablePolyglot) {
         table = tablePolyglot;
       }
@@ -165,7 +166,7 @@ export class VoiceActorChatter {
   }
 
   async selectedChatter(options: any = {}) {
-    const tables: RollTable[] = this.getVoiceChatterTables(null);
+    const tables: RollTable[] = await this.getVoiceChatterTables(null);
 
     const npcTokens = <Token[]>getCanvas().tokens?.controlled;
 
@@ -191,8 +192,8 @@ export class VoiceActorChatter {
 
     // Integration with polyglot
     if (polyglotIsActive) {
-      await this._createAutomaticPolyglotRolltable([token.document], options);
-      const tablePolyglot = this._checkRollTablePolyglot([token.document], options);
+      await this._createAutomaticPolyglotRolltable([token.document]);
+      const tablePolyglot = await this._checkRollTablePolyglot([token.document], options);
       if (tablePolyglot) {
         table = tablePolyglot;
       }
@@ -219,7 +220,7 @@ export class VoiceActorChatter {
     VoiceActorChatter.timer = undefined;
   }
 
-  _checkRollTablePolyglot(npcTokens: TokenDocument[], options: any = {}): RollTable | null {
+  async _checkRollTablePolyglot(npcTokens: TokenDocument[], options: any = {}): Promise<RollTable | null> {
     //@ts-ignore
     const polyglot: Polyglot = <Polyglot>window.polyglot.polyglot;
     const currentLanguageProvider: any = polyglot.LanguageProvider;
@@ -227,7 +228,7 @@ export class VoiceActorChatter {
     // Recover knowed languages of user
     const actorSource = <Actor>getGame().user?.character;
     const languagesSourceArray: Set<string>[] = polyglot.getUserLanguages([actorSource]);
-    const languagesSource = new Set();
+    const languagesSource = new Set<string>();
     for (const set of languagesSourceArray) {
       for (const element of set) {
         languagesSource.add(element);
@@ -244,7 +245,7 @@ export class VoiceActorChatter {
 
     // Recover knowed languages of target tokens
     const languagesTargetArray: Set<string>[] = polyglot.getUserLanguages(actors);
-    const languagesTarget = new Set();
+    const languagesTarget = new Set<string>();
     for (const set of languagesTargetArray) {
       for (const element of set) {
         languagesTarget.add(element);
@@ -283,9 +284,10 @@ export class VoiceActorChatter {
 
     if (langKnow.length == 0 && langNotKnow.length > 0) {
       // For now I just get the first language not know from the actor
-      const lang = langNotKnow[0];
-      const tables: RollTable[] = this.getVoiceChatterPolyglotTables(npcTokens[0].name,lang);
+      const lang = Array.from(languagesTarget)[0];
+      const tables: RollTable[] = await this.getVoiceChatterPolyglotTables(<Actor>npcTokens[0].actor,lang);
       const eligableTablesPolyglot: RollTable[] = tables.filter((x: RollTable) =>
+        x.data.results?.size > 0 &&
         npcTokens.filter((t: TokenDocument) =>
           x.name?.toLowerCase().includes(
             t.name
@@ -295,7 +297,9 @@ export class VoiceActorChatter {
           ),
         ),
       );
-
+      if(eligableTablesPolyglot.length == 0){
+        return null;
+      }
       const tableIndexPolyglot = Math.floor(Math.random() * eligableTablesPolyglot.length + 0);
       const tablePolyglot = eligableTablesPolyglot[tableIndexPolyglot];
       return tablePolyglot;
@@ -303,7 +307,7 @@ export class VoiceActorChatter {
     return null;
   }
 
-  async _createAutomaticPolyglotRolltable(npcTokens: TokenDocument[], options: any = {}): Promise<void> {
+  async _createAutomaticPolyglotRolltable(npcTokens: TokenDocument[]): Promise<void> {
     //@ts-ignore
     const polyglot: Polyglot = <Polyglot>window.polyglot.polyglot;
     const currentLanguageProvider: any = polyglot.LanguageProvider;
@@ -326,35 +330,13 @@ export class VoiceActorChatter {
     }
 
     if(languagesTarget.size > 0){
-      const voiceActorFolder = getGame().folders?.contents.filter(
-        (x: Folder) => x.type == 'RollTable' && x.name?.toLowerCase() == npcTokens[0].name + ' voice actor',
-      )[0];
+      // const voiceActorFolder = getGame().folders?.contents.filter(
+      //   (x: Folder) => x.type == 'RollTable' && x.name?.toLowerCase() == npcTokens[0].name + ' voice actor',
+      // )[0];
       await languagesTarget.forEach(async (lang: string) => {
         if (lang) {
           const actorPolyglotRollTableName = actors[0]?.name + ' voice ' + lang;
-          let myTable: RollTable | undefined = getGame().tables?.contents.find(
-            (table: RollTable) => table.name?.toLowerCase() == actorPolyglotRollTableName.toLowerCase(),
-          );
-          if (!myTable) {
-            const formula = '1d20';
-            const min = 1;
-            const max = 20;
-            myTable = <RollTable>await RollTable.create({
-              name: actorPolyglotRollTableName,
-              // description: actorRollTableName, // This appears on every roll in the chat!
-              results: [],
-              replacement: true,
-              displayRoll: true,
-              img: 'icons/svg/sound.svg', //"modules/EasyTable/easytable.png"
-              folder: voiceActorFolder ? voiceActorFolder : '',
-              formula: formula ? formula : min == 1 ? `1d${max}` : `1d${max - min + 1}+${min - 1}`,
-              //sort: number,
-              //permission: object,
-              //flags: object
-            });
-            //@ts-ignore
-            await myTable.normalize();
-          }
+          await VoiceActor.retrieveOrCreateRollTable(actors[0], actorPolyglotRollTableName);
         }
       });
     }

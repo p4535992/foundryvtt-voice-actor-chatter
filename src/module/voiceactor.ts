@@ -234,13 +234,13 @@ export class VoiceActor {
     }
   };
 
-  static retrieveOrCreateRollTable = async function (tokenData: Token, fileNamePath: string, fileName: string) {
-    const voiceActorFolder = getGame().folders?.contents.filter(
-      (x: Folder) => x.type == 'RollTable' && x.name?.toLowerCase() == tokenData.name?.toLowerCase() + ' voice actor',
-    )[0];
-    const actorRollTableName = tokenData.actor?.name + ' voice';
+  // static retrieveOrCreateRollTable = async function (tokenData: Token, fileNamePath: string, fileName: string):Promise<RollTable> {
+  static retrieveOrCreateRollTable = async function (actor: Actor, actorRollTableName:string)  :Promise<RollTable> {
+    const voiceActorFolder = await VoiceActor.retrieveOrCreateRollTableFolder(actor);
     let myTable: RollTable | undefined = getGame().tables?.contents.find(
-      (table: RollTable) => table.name?.toLowerCase() == actorRollTableName.toLowerCase(),
+      (table: RollTable) => 
+        table.name?.toLowerCase() == actorRollTableName.toLowerCase() &&
+        table.folder == voiceActorFolder,
     );
     if (!myTable) {
       const formula = '1d20';
@@ -260,12 +260,33 @@ export class VoiceActor {
         //permission: object,
         //flags: object
       });
-      //@ts-ignore
-      await myTable.normalize();
+      // //@ts-ignore
+      // await myTable.normalize();
     }
-
-    VoiceActor._onCreateResult(myTable, fileNamePath, fileName);
+    return myTable;
   };
+
+  static retrieveOrCreateRollTableFolder = async function (actor: Actor):Promise<Folder>{
+    let baseFolder = <Folder>getGame().folders?.contents.filter(
+      (x: Folder) => x.type == 'RollTable' && x.name?.toLowerCase() == 'voice actor',
+    )[0];
+    if(!baseFolder){
+      baseFolder = <Folder>await Folder.create({name: 'Voice Actor', type: 'RollTable', parent: null});
+    }   
+    //@ts-ignore
+    let voiceActorFolder = baseFolder.children.filter(
+      (x: Folder) => x.type == 'RollTable' && x.name?.toLowerCase() == actor?.token?.name?.toLowerCase() + ' voice actor',
+    )[0];
+    if(!voiceActorFolder){
+      voiceActorFolder = await Folder.create({name: <string>actor?.name + ' voice actor', type: 'RollTable', parent: baseFolder?.id, sorting: 'm'});
+    }
+    if (!voiceActorFolder) {
+      ui.notifications?.error(
+        `The '${VOICE_ACTOR_CHATTER_MODULE_NAME}' module requires a folder with name (case insensitive) '${actor?.token?.name?.toLowerCase()} voice actor' on the rollTable sidebar.`,
+      );
+    }
+    return voiceActorFolder;
+  }
 
   static async _onCreateResult(rollTable: RollTable, fileNamePath: string, fileName: string) {
     // event.preventDefault();
@@ -492,12 +513,10 @@ export const onRender = async (app, html, data) => {
             clearTimeout(vaRecorderTimeout);
             vaRecorderTimeout = null; //delete vaRecorderTimeout;
             // stream = null; //delete stream;
-
-            VoiceActor.retrieveOrCreateRollTable(
-              data,
-              `${dirName[0] == '/' ? dirName.substr(1) : dirName}/${fileName}`,
-              fileName,
-            );
+            const fileNamePath = `${dirName[0] == '/' ? dirName.substr(1) : dirName}/${fileName}`;
+            const actorRollTableName = data.actor?.name + ' voice';
+            const theTable = await VoiceActor.retrieveOrCreateRollTable(data.actor,actorRollTableName);
+            VoiceActor._onCreateResult(theTable, fileNamePath, fileName);
           }
         };
         vaRecorder.start();
