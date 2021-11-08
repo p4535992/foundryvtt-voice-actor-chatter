@@ -1,3 +1,7 @@
+# 0.2.6
+
+- Added automatic creation of the roll table for the polyglot integration
+
 # 0.2.5
 
 - Some rename, bug fix and performance

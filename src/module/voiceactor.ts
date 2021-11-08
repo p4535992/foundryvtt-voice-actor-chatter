@@ -165,7 +165,7 @@ export class VoiceActor {
 
   static playClipRandomFromToken = async function (token: Token) {
     const voiceActorFolder = <Folder>(
-      getGame().folders?.contents.filter((x) => x.type == 'RollTable' && x.name?.toLowerCase() == 'voice actor')[0]
+      getGame().folders?.contents.filter((x) => x.type == 'RollTable' && x.name?.toLowerCase() == token.name?.toLowerCase() + ' voice actor')[0]
     );
     const tables = <RollTable[]>(
       getGame().tables?.contents.filter(
@@ -236,7 +236,7 @@ export class VoiceActor {
 
   static retrieveOrCreateRollTable = async function (tokenData: Token, fileNamePath: string, fileName: string) {
     const voiceActorFolder = getGame().folders?.contents.filter(
-      (x: Folder) => x.type == 'RollTable' && x.name?.toLowerCase() == 'voice actor',
+      (x: Folder) => x.type == 'RollTable' && x.name?.toLowerCase() == tokenData.name?.toLowerCase() + ' voice actor',
     )[0];
     const actorRollTableName = tokenData.actor?.name + ' voice';
     let myTable: RollTable | undefined = getGame().tables?.contents.find(
