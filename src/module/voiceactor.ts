@@ -6,6 +6,7 @@ import { TokenData } from '@league-of-foundry-developers/foundry-vtt-types/src/f
 import { BaseTableResult } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/documents.mjs';
 import { i18n, warn } from '../main';
 import { getGame } from './helpers';
+import { polyglotIsActive } from './Hooks';
 import { VOICE_ACTOR_CHATTER_MODULE_NAME } from './settings';
 import { VoiceActorChatter } from './voiceactorchatter';
 
@@ -165,7 +166,9 @@ export class VoiceActor {
 
   static playClipRandomFromToken = async function (token: Token) {
     const voiceActorFolder = <Folder>(
-      getGame().folders?.contents.filter((x) => x.type == 'RollTable' && x.name?.toLowerCase() == token.name?.toLowerCase() + ' voice actor')[0]
+      getGame().folders?.contents.filter(
+        (x) => x.type == 'RollTable' && x.name?.toLowerCase() == token.name?.toLowerCase() + ' voice actor',
+      )[0]
     );
     const tables = <RollTable[]>(
       getGame().tables?.contents.filter(
@@ -235,12 +238,11 @@ export class VoiceActor {
   };
 
   // static retrieveOrCreateRollTable = async function (tokenData: Token, fileNamePath: string, fileName: string):Promise<RollTable> {
-  static retrieveOrCreateRollTable = async function (actor: Actor, actorRollTableName:string)  :Promise<RollTable> {
+  static retrieveOrCreateRollTable = async function (actor: Actor, actorRollTableName: string): Promise<RollTable> {
     const voiceActorFolder = await VoiceActor.retrieveOrCreateRollTableFolder(actor);
     let myTable: RollTable | undefined = getGame().tables?.contents.find(
-      (table: RollTable) => 
-        table.name?.toLowerCase() == actorRollTableName.toLowerCase() &&
-        table.folder == voiceActorFolder,
+      (table: RollTable) =>
+        table.name?.toLowerCase() == actorRollTableName.toLowerCase() && table.folder == voiceActorFolder,
     );
     if (!myTable) {
       const formula = '1d20';
@@ -266,19 +268,27 @@ export class VoiceActor {
     return myTable;
   };
 
-  static retrieveOrCreateRollTableFolder = async function (actor: Actor):Promise<Folder>{
-    let baseFolder = <Folder>getGame().folders?.contents.filter(
-      (x: Folder) => x.type == 'RollTable' && x.name?.toLowerCase() == 'voice actor',
-    )[0];
-    if(!baseFolder){
-      baseFolder = <Folder>await Folder.create({name: 'Voice Actor', type: 'RollTable', parent: null});
-    }   
+  static retrieveOrCreateRollTableFolder = async function (actor: Actor): Promise<Folder> {
+    let baseFolder = <Folder>(
+      getGame().folders?.contents.filter(
+        (x: Folder) => x.type == 'RollTable' && x.name?.toLowerCase() == 'voice actor',
+      )[0]
+    );
+    if (!baseFolder) {
+      baseFolder = <Folder>await Folder.create({ name: 'Voice Actor', type: 'RollTable', parent: null });
+    }
     //@ts-ignore
     let voiceActorFolder = baseFolder.children.filter(
-      (x: Folder) => x.type == 'RollTable' && x.name?.toLowerCase() == actor?.token?.name?.toLowerCase() + ' voice actor',
+      (x: Folder) =>
+        x.type == 'RollTable' && x.name?.toLowerCase() == actor?.token?.name?.toLowerCase() + ' voice actor',
     )[0];
-    if(!voiceActorFolder){
-      voiceActorFolder = await Folder.create({name: <string>actor?.name + ' voice actor', type: 'RollTable', parent: baseFolder?.id, sorting: 'm'});
+    if (!voiceActorFolder) {
+      voiceActorFolder = await Folder.create({
+        name: <string>actor?.name + ' voice actor',
+        type: 'RollTable',
+        parent: baseFolder?.id,
+        sorting: 'm',
+      });
     }
     if (!voiceActorFolder) {
       ui.notifications?.error(
@@ -286,7 +296,7 @@ export class VoiceActor {
       );
     }
     return voiceActorFolder;
-  }
+  };
 
   static async _onCreateResult(rollTable: RollTable, fileNamePath: string, fileName: string) {
     // event.preventDefault();
@@ -428,7 +438,11 @@ export const onRender = async (app, html, data) => {
         </button>`;
   }
 
-  if (getGame().user?.isGM || data.owner || getGame().settings.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'playersPlaybackLimited')) {
+  if (
+    getGame().user?.isGM ||
+    data.owner ||
+    getGame().settings.get(VOICE_ACTOR_CHATTER_MODULE_NAME, 'playersPlaybackLimited')
+  ) {
     buttons += `<button id="voiceactor-playback" class="voiceactor-button" title="${i18n(
       'foundryvtt-voice-actor-chatter.ui.button-tooltip-playback',
     )}">
@@ -515,7 +529,10 @@ export const onRender = async (app, html, data) => {
             // stream = null; //delete stream;
             const fileNamePath = `${dirName[0] == '/' ? dirName.substr(1) : dirName}/${fileName}`;
             const actorRollTableName = data.actor?.name + ' voice';
-            const theTable = await VoiceActor.retrieveOrCreateRollTable(data.actor,actorRollTableName);
+            const theTable = await VoiceActor.retrieveOrCreateRollTable(data.actor, actorRollTableName);
+            if (polyglotIsActive) {
+              await VoiceActorChatter._createAutomaticPolyglotRolltable([data]);
+            }
             VoiceActor._onCreateResult(theTable, fileNamePath, fileName);
           }
         };

@@ -4,7 +4,6 @@ import { getGame } from './helpers';
 export const VOICE_ACTOR_CHATTER_MODULE_NAME = 'foundryvtt-voice-actor-chatter';
 
 export const registerSettings = function () {
-
   getGame().settings.register(VOICE_ACTOR_CHATTER_MODULE_NAME, 'playersRecordOwned', {
     name: i18n('foundryvtt-voice-actor-chatter.settings.players-record-owned.name'),
     hint: i18n('foundryvtt-voice-actor-chatter.settings.players-record-owned.hint'),
@@ -77,5 +76,4 @@ export const registerSettings = function () {
     default: false,
     type: Boolean,
   });
-
 };

@@ -1,3 +1,8 @@
+# 0.2.7
+
+- Better automatization on the creation of the rolltable with polyglot
+- Add Explicit settings for dnd5e system with check the languages on the token
+
 # 0.2.6
 
 - Added automatic creation of the roll table for the polyglot integration
