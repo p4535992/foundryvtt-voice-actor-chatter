@@ -1,5 +1,15 @@
 # Voice Actor Chatter for FVTT
 
+![Latest Release Download Count](https://img.shields.io/github/downloads/p4535992/foundryvtt-arms-reach/latest/module.zip?color=2b82fc&label=DOWNLOADS&style=for-the-badge) 
+
+[![Forge Installs](https://img.shields.io/badge/dynamic/json?label=Forge%20Installs&query=package.installs&suffix=%25&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Ffoundryvtt-arms-reach&colorB=006400&style=for-the-badge)](https://forge-vtt.com/bazaar#package=foundryvtt-arms-reach) 
+
+![Foundry Core Compatible Version](https://img.shields.io/badge/dynamic/json.svg?url=https%3A%2F%2Fraw.githubusercontent.com%2Fp4535992%2Ffoundryvtt-arms-reach%2Fmaster%2Fsrc%2Fmodule.json&label=Foundry%20Version&query=$.compatibleCoreVersion&colorB=orange&style=for-the-badge)
+
+![Latest Version](https://img.shields.io/badge/dynamic/json.svg?url=https%3A%2F%2Fraw.githubusercontent.com%2Fp4535992%2Ffoundryvtt-arms-reach%2Fmaster%2Fsrc%2Fmodule.json&label=Latest%20Release&prefix=v&query=$.version&colorB=red&style=for-the-badge)
+
+[![Foundry Hub Endorsements](https://img.shields.io/endpoint?logoColor=white&url=https%3A%2F%2Fwww.foundryvtt-hub.com%2Fwp-json%2Fhubapi%2Fv1%2Fpackage%2Ffoundryvtt-arms-reach%2Fshield%2Fendorsements&style=for-the-badge)](https://www.foundryvtt-hub.com/package/foundryvtt-arms-reach/)
+
 This module was born as a union of the features of the two [Voice Actor for FVTT by Blitz](https://github.com/BlitzKraig/fvtt-VoiceActor) and [NPC Chatter](https://github.com/cswendrowski/FoundryVtt-Npc-Chatter) modules.
 
 This module arises from the need together with the [Trigger Happy module](https://github.com/League-of-Foundry-Developers/fvtt-module-trigger-happy) to randomize a set of voices for the same actor through a customizable rollTable. Basicaly i want when click on a actor to have a random prepared audio to run.
