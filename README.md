@@ -12,9 +12,13 @@
 
 This module was born as a union of the features of the two [Voice Actor for FVTT by Blitz](https://github.com/BlitzKraig/fvtt-VoiceActor) and [NPC Chatter](https://github.com/cswendrowski/FoundryVtt-Npc-Chatter) modules.
 
+## THIS MODULE IS ABBANDONED IN FAVOR OF [Token Says](https://github.com/napolitanod/Token-Says) IT DOESN'T HAVE THE RECORD UTILITY, BUT IT GOT ALL THE REST AND MORE.
+
 This module arises from the need together with the [Trigger Happy module](https://github.com/League-of-Foundry-Developers/fvtt-module-trigger-happy) to randomize a set of voices for the same actor through a customizable rollTable. Basicaly i want when click on a actor to have a random prepared audio to run.
 
 This work even with external audio just set the source on the roll table.
+
+After you recorded a voice hte module automatically generate a series of rolltable based on the languages of the actor and the polyglot module if present.
 
 Here some macro for give the idea
 
